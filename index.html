@@ -249,18 +249,28 @@
     }
 
     .prize-dot, .prize-pill {
-      width: clamp(13px, 1.8vw, 18px);
-      height: clamp(5px, 0.8vw, 7px);
+      width: clamp(15px, 2.2vw, 22px);
+      height: clamp(7px, 1.1vw, 10px);
       border-radius: 999px;
       background: #e2e8f0;
-      border: 1px solid #cbd5e1;
+      border: 1.5px solid #cbd5e1;
       transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-block;
     }
 
-    .prize-dot.active, .prize-pill.active {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border-color: #059669;
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    /* Acerto: Verde vibrante */
+    .prize-dot.hit, .prize-pill.hit, .prize-dot.active, .prize-pill.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      border-color: #059669 !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.7) !important;
+      transform: scaleY(1.2);
+    }
+
+    /* Erro: Vermelho vibrante */
+    .prize-dot.miss, .prize-pill.miss {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      border-color: #b91c1c !important;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.7) !important;
       transform: scaleY(1.2);
     }
 
@@ -272,9 +282,9 @@
 
     .stat-chip.prize-chip.is-complete .prize-dot.active,
     .stat-chip.prize-chip.is-complete .prize-pill.active {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      border-color: #d97706;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+      border-color: #d97706 !important;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8) !important;
     }
 
     .prize-alert-banner {
@@ -947,8 +957,8 @@
         padding: 1px 4px;
       }
       .prize-dot, .prize-pill {
-        width: 11px;
-        height: 4.5px;
+        width: 14px;
+        height: 6px;
       }
 
       /* Rodapé no Mobile */
@@ -1366,6 +1376,79 @@
       transform: scale(0.98);
     }
 
+    .btn-monitor-secondary {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #334155;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-monitor-secondary:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .btn-monitor-secondary:active {
+      transform: scale(0.97);
+    }
+
+    /* Toast de Notificação do Monitor */
+    .monitor-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .monitor-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Indicador discreto de toque no logo */
+    .logo-tap-badge {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: #0d9488;
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.45);
+      z-index: 50;
+      white-space: nowrap;
+    }
+
+    .logo-tap-badge.visible {
+      opacity: 1;
+    }
+
     .btn-footer-config {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -1417,8 +1500,8 @@
 
     <!-- Header do Tablet (Sem abas!) -->
     <header class="tablet-header">
-      <div class="brand-title">
-        <img src="ss_LogoComBox.svg" onerror="this.onerror=null; this.src='https://sesisaudedf.org.br/wp-content/uploads/2024/02/ss_LogoComBox.svg';" alt="SESI Saúde" class="brand-logo-img" onclick="handleLogoTap()" title="Toque 3 vezes rápido para abrir o Painel do Monitor" style="cursor: pointer;">
+      <div class="brand-title" onclick="handleLogoTap(event)" title="Toque 3 vezes rápido para abrir o Painel do Monitor" style="cursor: pointer; user-select: none; position: relative;">
+        <img src="ss_LogoComBox.svg" onerror="this.onerror=null; this.src='https://sesisaudedf.org.br/wp-content/uploads/2024/02/ss_LogoComBox.svg';" alt="SESI Saúde" class="brand-logo-img">
         <div class="brand-divider"></div>
         <div class="brand-text">
           <h1>Roleta da Saúde</h1>
@@ -1519,7 +1602,7 @@
 
     <!-- Rodapé do Tablet com Dica e Botão Reiniciar -->
     <footer class="tablet-footer-bar">
-      <div class="tablet-footer-tip">
+      <div class="tablet-footer-tip" ondblclick="openMonitorPanel()" title="Duplo clique para abrir o painel do monitor">
         <span>💡</span>
         <span>Toque no botão <strong>GIRAR</strong> ou na roleta para sortear uma pergunta!</span>
       </div>
@@ -1573,41 +1656,77 @@
           <span class="monitor-icon">⚙️</span>
           <div>
             <h2>Painel do Monitor do Estande</h2>
-            <p>Controles rápidos para a equipe SESI no evento</p>
+            <p>Controles operacionais e métricas em tempo real para a equipe SESI</p>
           </div>
         </div>
         <button class="btn-close-monitor" onclick="closeMonitorPanel()" title="Fechar">✕</button>
       </div>
 
       <div class="monitor-grid">
-        <!-- 1. Meta do Brinde -->
+        <!-- MÓDULO 1: Formato das Rodadas -->
         <div class="monitor-card">
-          <label class="monitor-card-label">🎯 Meta para Ganhar o Brinde</label>
-          <p class="monitor-card-desc">Controle o ritmo de entrega conforme o estoque de brindes no dia:</p>
-          <div class="monitor-btn-group" id="streakSelector">
-            <button class="monitor-opt-btn" onclick="setPrizeTarget(1)" id="btnTarget1">1 acerto (Fácil / Brinde rápido)</button>
-            <button class="monitor-opt-btn" onclick="setPrizeTarget(2)" id="btnTarget2">2 acertos seguidos (Equilibrado)</button>
-            <button class="monitor-opt-btn" onclick="setPrizeTarget(3)" id="btnTarget3">3 acertos seguidos (Desafiador)</button>
+          <label class="monitor-card-label">🎯 Formato das Rodadas</label>
+          <p class="monitor-card-desc">Defina a dinâmica das tentativas por participante:</p>
+          <div class="monitor-btn-group">
+            <button class="monitor-opt-btn" onclick="setChancesMode(true)" id="btnChancesOn">
+              🎯 3 Chances (Verde / Vermelho)
+            </button>
+            <button class="monitor-opt-btn" onclick="setChancesMode(false)" id="btnChancesOff">
+              ⚡ Sequência Contínua (Clássico)
+            </button>
           </div>
         </div>
 
-        <!-- 2. Modo de Avanço dos Feedbacks -->
+        <!-- MÓDULO 2: Meta do Brinde -->
         <div class="monitor-card">
-          <label class="monitor-card-label">⏱️ Modo de Avanço da Tela</label>
-          <p class="monitor-card-desc">Defina se a explicação fecha sozinha ou aguarda o participante ler:</p>
+          <label class="monitor-card-label" id="prizeTargetLabel">🎁 Meta para Ganhar o Brinde</label>
+          <p class="monitor-card-desc" id="prizeTargetDesc">Controle a quantidade de acertos necessários para o brinde:</p>
+          <div class="monitor-btn-group" id="streakSelector">
+            <button class="monitor-opt-btn" onclick="setPrizeTarget(1)" id="btnTarget1">1 acerto (Fácil)</button>
+            <button class="monitor-opt-btn" onclick="setPrizeTarget(2)" id="btnTarget2">2 acertos (Equilibrado)</button>
+            <button class="monitor-opt-btn" onclick="setPrizeTarget(3)" id="btnTarget3">3 acertos (Desafiador)</button>
+          </div>
+        </div>
+
+        <!-- MÓDULO 3: Velocidade do Giro da Roleta -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">⚡ Velocidade do Giro da Roleta</label>
+          <p class="monitor-card-desc">Ajuste o tempo de rotação de acordo com o fluxo de pessoas no evento:</p>
+          <div class="monitor-btn-group">
+            <button class="monitor-opt-btn" onclick="setSpinSpeed(2600)" id="btnSpeedFast">
+              ⚡ Rápido (2.6s - Fila Cheia)
+            </button>
+            <button class="monitor-opt-btn" onclick="setSpinSpeed(4400)" id="btnSpeedNormal">
+              🎯 Normal (4.4s - Equilibrado)
+            </button>
+            <button class="monitor-opt-btn" onclick="setSpinSpeed(5500)" id="btnSpeedSlow">
+              ☕ Calmo (5.5s - Suspense)
+            </button>
+          </div>
+        </div>
+
+        <!-- MÓDULO 4: Modo de Avanço dos Feedbacks -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">⏱️ Leitura das Explicações ("Você Sabia?")</label>
+          <p class="monitor-card-desc">Defina se a explicação avança sozinha ou aguarda o participante tocar em continuar:</p>
           <div class="monitor-btn-group">
             <button class="monitor-opt-btn" onclick="setAdvanceMode('auto')" id="btnAdvAuto">
-              Automático (Avança em 5s)
+              ⏳ Automático (Avança em 5s)
             </button>
             <button class="monitor-opt-btn" onclick="setAdvanceMode('manual')" id="btnAdvManual">
-              Manual (Tocar em Continuar)
+              👆 Manual (Aguardar Toque no Botão)
             </button>
           </div>
         </div>
 
-        <!-- 3. Áudio e Efeitos -->
+        <!-- MÓDULO 5: Áudio e Efeitos -->
         <div class="monitor-card">
-          <label class="monitor-card-label">🔊 Efeitos Sonoros da Roleta</label>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <label class="monitor-card-label" style="margin: 0;">🔊 Efeitos Sonoros da Roleta</label>
+            <button class="btn-monitor-secondary" onclick="testAudio()" title="Testar áudio agora" style="padding: 5px 12px; font-size: 0.8rem;">
+              🎵 Testar Som
+            </button>
+          </div>
           <p class="monitor-card-desc">Sons da roleta, giros e comemorações:</p>
           <div class="monitor-btn-group">
             <button class="monitor-opt-btn" onclick="setSoundState(true)" id="btnSoundOn">Som Ligado 🔊</button>
@@ -1615,10 +1734,27 @@
           </div>
         </div>
 
-        <!-- 4. Métricas do Turno e Reset -->
+        <!-- MÓDULO 6: Testes & Ferramentas Rápidas -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">🛠️ Ferramentas Rápidas do Monitor</label>
+          <p class="monitor-card-desc">Simulações e utilitários para validação antes ou durante o evento:</p>
+          <div class="monitor-btn-group">
+            <button class="btn-monitor-secondary" onclick="testPrizeScreen()" style="flex: 1; min-width: 140px;">
+              🎁 Testar Tela de Brinde
+            </button>
+            <button class="btn-monitor-secondary" onclick="reloadQuestionPool()" style="flex: 1; min-width: 140px;">
+              🔄 Restaurar Perguntas
+            </button>
+            <button class="btn-monitor-secondary" onclick="toggleFullScreen()" style="flex: 1; min-width: 140px;">
+              ⛶ Modo Tela Cheia
+            </button>
+          </div>
+        </div>
+
+        <!-- MÓDULO 7: Métricas do Turno e Reset -->
         <div class="monitor-card">
           <label class="monitor-card-label">📊 Métricas Acumuladas do Evento</label>
-          <div class="monitor-stats-row">
+          <div class="monitor-stats-row" style="grid-template-columns: repeat(4, 1fr);">
             <div class="m-stat-pill">
               <span class="m-stat-val" id="mTotalPlays">0</span>
               <span class="m-stat-sub">Perguntas</span>
@@ -1631,10 +1767,19 @@
               <span class="m-stat-val" id="mAccuracy">0%</span>
               <span class="m-stat-sub">Acertos</span>
             </div>
+            <div class="m-stat-pill">
+              <span class="m-stat-val" id="mQuestionsLeft">0</span>
+              <span class="m-stat-sub">Perg. Disp.</span>
+            </div>
           </div>
-          <button class="btn-monitor-danger" onclick="resetShiftMetrics()">
-            🗑️ Zerar Métricas do Turno
-          </button>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button class="btn-monitor-secondary" onclick="copyShiftReport()" style="flex: 1;">
+              📋 Copiar Relatório do Turno
+            </button>
+            <button class="btn-monitor-danger" onclick="resetShiftMetrics()" style="flex: 1; margin: 0;" id="btnResetShift">
+              🗑️ Zerar Métricas
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1701,19 +1846,6 @@
         ],
         resposta_correta_texto: "Está protegida contra várias doenças importantes",
         explicacao: "A vacinação fortalece o sistema imunológico contra diversas enfermidades graves e transmissíveis, protegendo a criança e toda a comunidade."
-      },
-      {
-        nivel: 4,
-        dificuldade: "Muito Difícil",
-        tema: "Saúde da Família",
-        pergunta: "O que é mais importante para uma vida saudável?",
-        opcoes: [
-          "Fazer exames regularmente",
-          "Ter hábitos saudáveis diariamente",
-          "Tomar medicamentos preventivamente"
-        ],
-        resposta_correta_texto: "Ter hábitos saudáveis diariamente",
-        explicacao: "A saúde é construída no dia a dia com boa alimentação, sono de qualidade, exercícios e bem-estar físico e mental."
       },
 
       // CATEGORIA 2 – Saúde da Mulher
@@ -1932,6 +2064,15 @@
     // ==========================================
     // 2. CONFIGURAÇÃO DA ROLETA & MODO EVENTO
     // ==========================================
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     const sectors = [
       { label: "Saúde da Família", color: "#0d9488" },
       { label: "Saúde Cardiovascular", color: "#dc2626" },
@@ -1941,11 +2082,16 @@
     ];
 
     // Configurações persistentes do Modo Monitor do Estande
+    let chancesModeEnabled = localStorage.getItem("sesi_chances_mode") !== "false"; // Padrão: ativado
+    let roundAttempts = []; // Registra 'hit' ou 'miss' nas 3 chances da rodada atual
+
     let prizeTargetHits = parseInt(localStorage.getItem("sesi_prize_target") || "3", 10);
     if (![1, 2, 3].includes(prizeTargetHits)) prizeTargetHits = 3;
 
     let advanceMode = localStorage.getItem("sesi_advance_mode") || "auto"; // 'auto' ou 'manual'
     let soundEnabled = localStorage.getItem("sesi_sound_enabled") !== "false";
+    let spinDurationMs = parseInt(localStorage.getItem("sesi_spin_duration") || "4400", 10);
+    if (![2600, 4400, 5500].includes(spinDurationMs)) spinDurationMs = 4400;
 
     // Métricas do Turno do Evento (acumuladas no dia)
     let shiftMetrics = {
@@ -1967,7 +2113,7 @@
     let totalHits = 0;
     let totalMisses = 0;
     let consecutiveHits = 0;
-    let availableQuestions = [...allQuestions];
+    let availableQuestions = shuffleArray([...allQuestions]);
     let isSpinning = false;
     let currentRotation = 0;
     let popupAutoTimer = null;
@@ -2375,6 +2521,17 @@
 
     function spinWheel() {
       if (isSpinning) return;
+      const qModal = document.getElementById("questionModal");
+      const fPopup = document.getElementById("feedbackPopup");
+      const mModal = document.getElementById("monitorModal");
+      if ((qModal && qModal.classList.contains("active")) ||
+          (fPopup && fPopup.classList.contains("active")) ||
+          (mModal && mModal.classList.contains("active"))) {
+        return;
+      }
+      if (chancesModeEnabled && roundAttempts.length >= 3) {
+        return;
+      }
       isSpinning = true;
 
       // Som realista de clique no botão e vento de alta rotação
@@ -2399,7 +2556,7 @@
       const spinRounds = 6 + Math.random() * 4.5;
       const extraAngle = Math.random() * 2 * Math.PI;
       const totalSpin = spinRounds * 2 * Math.PI + extraAngle;
-      const duration = 4400; // Tempo perfeito de suspense dramático
+      const duration = spinDurationMs || 4400; // Tempo ajustável no Painel do Monitor
       const start = performance.now();
       const initialRotation = currentRotation;
       lastPinIndex = -1;
@@ -2515,15 +2672,26 @@
     let currentCorrectLetter = "";
 
     function openQuestionForTheme(themeName) {
-      // Busca perguntas disponíveis para o tema sorteado
-      let pool = availableQuestions.filter(q => q.tema.trim().toLowerCase() === themeName.trim().toLowerCase());
-
-      // Fallback caso todas as perguntas do tema já tenham sido respondidas na sessão
-      if (pool.length === 0) {
-        pool = allQuestions.filter(q => q.tema.trim().toLowerCase() === themeName.trim().toLowerCase());
+      // Se todas as perguntas do banco geral já foram sorteadas, recarrega e re-embaralha tudo
+      if (!availableQuestions || availableQuestions.length === 0) {
+        availableQuestions = shuffleArray([...allQuestions]);
       }
 
-      const selectedQuestion = pool[Math.floor(Math.random() * pool.length)];
+      // Busca perguntas disponíveis ainda não sorteadas para o tema sorteado
+      let pool = availableQuestions.filter(q => q.tema.trim().toLowerCase() === themeName.trim().toLowerCase());
+
+      // Se todas as perguntas desse tema específico já saíram nesta sessão,
+      // utiliza as perguntas restantes do banco para NUNCA REPETIR até zerar todas as 20
+      if (pool.length === 0) {
+        pool = availableQuestions;
+      }
+
+      const selectedIndex = Math.floor(Math.random() * pool.length);
+      const selectedQuestion = pool[selectedIndex];
+
+      // Remove IMEDIATAMENTE a pergunta escolhida do banco para NUNCA REPETIR
+      availableQuestions = availableQuestions.filter(q => q !== selectedQuestion);
+
       showQuestionModal(selectedQuestion);
     }
 
@@ -2642,11 +2810,55 @@
       const tag = document.getElementById("prizeStreakTag");
       const container = document.getElementById("prizeDotsContainer");
 
-      if (tag) {
-        tag.textContent = prizeTargetHits === 1 ? "1 acerto" : `${prizeTargetHits} seguidas`;
-      }
+      if (!container) return;
 
-      if (container) {
+      if (chancesModeEnabled) {
+        // Modo 3 Chances por Rodada
+        const totalChances = 3;
+        const currentCount = roundAttempts.length;
+
+        if (tag) {
+          if (currentCount === 0) {
+            tag.textContent = "3 Chances";
+          } else if (currentCount < totalChances) {
+            tag.textContent = `Chance ${currentCount + 1}/3`;
+          } else {
+            tag.textContent = "3/3 Concluído";
+          }
+        }
+
+        container.innerHTML = "";
+        for (let i = 0; i < totalChances; i++) {
+          const pill = document.createElement("span");
+          const res = roundAttempts[i];
+          if (res === 'hit') {
+            pill.className = "prize-pill hit";
+            pill.title = `Chance ${i + 1}: Acertou ✅`;
+          } else if (res === 'miss') {
+            pill.className = "prize-pill miss";
+            pill.title = `Chance ${i + 1}: Errou ❌`;
+          } else {
+            pill.className = "prize-pill";
+            pill.title = `Chance ${i + 1}: Pendente`;
+          }
+          pill.id = `p-dot-${i + 1}`;
+          container.appendChild(pill);
+        }
+
+        if (prizeChip) {
+          const roundHits = roundAttempts.filter(r => r === 'hit').length;
+          if (roundAttempts.length >= 3 && roundHits >= prizeTargetHits) {
+            prizeChip.classList.add("is-complete");
+          } else {
+            prizeChip.classList.remove("is-complete");
+          }
+        }
+      } else {
+        // Modo Tradicional (Sequência de acertos seguidos)
+        if (tag) {
+          tag.textContent = prizeTargetHits === 1 ? "1 acerto" : `${prizeTargetHits} seguidas`;
+        }
+
         container.innerHTML = "";
         for (let i = 1; i <= prizeTargetHits; i++) {
           const pill = document.createElement("span");
@@ -2655,19 +2867,20 @@
           pill.title = `Acerto ${i} de ${prizeTargetHits}`;
           container.appendChild(pill);
         }
-      }
 
-      if (prizeChip) {
-        if (consecutiveHits >= prizeTargetHits) {
-          prizeChip.classList.add("is-complete");
-        } else {
-          prizeChip.classList.remove("is-complete");
+        if (prizeChip) {
+          if (consecutiveHits >= prizeTargetHits) {
+            prizeChip.classList.add("is-complete");
+          } else {
+            prizeChip.classList.remove("is-complete");
+          }
         }
       }
     }
 
     function resetStreak() {
       consecutiveHits = 0;
+      roundAttempts = [];
       updatePrizeDots();
     }
 
@@ -2690,24 +2903,52 @@
         shiftMetrics.totalHits++;
         totalHits++;
         consecutiveHits++;
+        if (chancesModeEnabled) {
+          roundAttempts.push('hit');
+        }
         saveShiftMetrics();
         updateScoreboard();
-        updatePrizeDots();
 
-        // Se atingiu a meta de acertos configurada pelo monitor:
-        if (consecutiveHits >= prizeTargetHits) {
-          shiftMetrics.totalPrizes++;
-          saveShiftMetrics();
-          setTimeout(() => {
-            closeQuestionModal();
-            showPrizePopup();
-          }, 850);
+        if (chancesModeEnabled) {
+          if (roundAttempts.length >= 3) {
+            const roundHits = roundAttempts.filter(r => r === 'hit').length;
+            if (roundHits >= prizeTargetHits) {
+              shiftMetrics.totalPrizes++;
+              saveShiftMetrics();
+              setTimeout(() => {
+                closeQuestionModal();
+                showPrizePopup(roundHits, 3);
+              }, 850);
+            } else {
+              playCorrectSound();
+              setTimeout(() => {
+                closeQuestionModal();
+                showRoundFinishedPopup(roundHits, 3, true);
+              }, 850);
+            }
+          } else {
+            playCorrectSound();
+            setTimeout(() => {
+              closeQuestionModal();
+              showSuccessPopup(roundAttempts.length, 3);
+            }, 850);
+          }
         } else {
-          playCorrectSound();
-          setTimeout(() => {
-            closeQuestionModal();
-            showSuccessPopup();
-          }, 850);
+          // Modo sequencial clássico
+          if (consecutiveHits >= prizeTargetHits) {
+            shiftMetrics.totalPrizes++;
+            saveShiftMetrics();
+            setTimeout(() => {
+              closeQuestionModal();
+              showPrizePopup();
+            }, 850);
+          } else {
+            playCorrectSound();
+            setTimeout(() => {
+              closeQuestionModal();
+              showSuccessPopup();
+            }, 850);
+          }
         }
       } else {
         clickedBtn.classList.add("wrong");
@@ -2720,16 +2961,42 @@
 
         playWrongSound();
         totalMisses++;
+        if (chancesModeEnabled) {
+          roundAttempts.push('miss');
+        }
         saveShiftMetrics();
         const hadStreak = consecutiveHits > 0;
         consecutiveHits = 0;
         updateScoreboard();
-        updatePrizeDots();
 
-        setTimeout(() => {
-          closeQuestionModal();
-          handleWrongAnswer(hadStreak);
-        }, 1300);
+        if (chancesModeEnabled) {
+          if (roundAttempts.length >= 3) {
+            const roundHits = roundAttempts.filter(r => r === 'hit').length;
+            if (roundHits >= prizeTargetHits) {
+              shiftMetrics.totalPrizes++;
+              saveShiftMetrics();
+              setTimeout(() => {
+                closeQuestionModal();
+                showPrizePopup(roundHits, 3);
+              }, 1300);
+            } else {
+              setTimeout(() => {
+                closeQuestionModal();
+                showRoundFinishedPopup(roundHits, 3, false);
+              }, 1300);
+            }
+          } else {
+            setTimeout(() => {
+              closeQuestionModal();
+              handleWrongAnswer(false, roundAttempts.length, 3);
+            }, 1300);
+          }
+        } else {
+          setTimeout(() => {
+            closeQuestionModal();
+            handleWrongAnswer(hadStreak);
+          }, 1300);
+        }
       }
     }
 
@@ -2772,24 +3039,66 @@
         prizeConfettiInterval = null;
       }
       closePopup();
+      roundAttempts = [];
       // Reinicia completamente o jogo para o próximo participante
       resetGame(false);
     }
 
+    function finishRoundAndReset() {
+      if (popupAutoTimer) {
+        clearInterval(popupAutoTimer);
+        clearTimeout(popupAutoTimer);
+        popupAutoTimer = null;
+      }
+      closePopup();
+      roundAttempts = [];
+      consecutiveHits = 0;
+      totalHits = 0;
+      totalMisses = 0;
+      if (!availableQuestions || availableQuestions.length < 3) {
+        availableQuestions = shuffleArray([...allQuestions]);
+      }
+      updateScoreboard();
+      const hubBtn = document.getElementById("spinHubBtn");
+      if (hubBtn) hubBtn.classList.add("idle-pulse");
+    }
+
     // Popup de Vitória Especial: BRINDE CONQUISTADO (com contagem regressiva e auto-reset)
-    function showPrizePopup() {
+    function showPrizePopup(roundHits = null, totalChances = 3) {
       playPrizeFanfareSound();
       const popupCard = document.getElementById("popupCard");
       
       let secondsLeft = 10;
       const totalSeconds = 10;
-      const targetText = prizeTargetHits === 1 ? "1 pergunta" : `${prizeTargetHits} perguntas seguidas`;
+
+      let victorySubtitle = "";
+      let pillsVisual = "";
+      if (chancesModeEnabled && roundAttempts.length > 0) {
+        const hits = roundHits !== null ? roundHits : roundAttempts.filter(r => r === 'hit').length;
+        victorySubtitle = `Você acertou <strong>${hits} de ${totalChances}</strong> perguntas sobre Saúde e Prevenção!`;
+        pillsVisual = `
+          <div style="display: flex; justify-content: center; gap: 12px; margin: 12px 0 16px;">
+            ${roundAttempts.map((res, i) => `
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; font-weight: 800; font-size: 1.15rem; color: #fff; background: ${res === 'hit' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)'}; box-shadow: 0 4px 10px ${res === 'hit' ? 'rgba(16,185,129,0.45)' : 'rgba(239,68,68,0.45)'};">
+                  ${res === 'hit' ? '✓' : '✕'}
+                </span>
+                <span style="font-size: 0.72rem; font-weight: 700; color: #64748b;">Chance ${i + 1}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        const targetText = prizeTargetHits === 1 ? "1 pergunta" : `${prizeTargetHits} perguntas seguidas`;
+        victorySubtitle = `Você acertou <strong>${targetText}</strong> sobre Saúde e Prevenção!`;
+      }
 
       popupCard.innerHTML = `
         <div class="feedback-icon-wrap" style="background: #fef3c7; color: #b45309; font-size: 3rem;">🎁</div>
         <h2 class="popup-title" style="color: #b45309; font-size: 1.85rem;">PARABÉNS! VOCÊ GANHOU O BRINDE!</h2>
-        <p style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 12px 0;">
-          Você acertou <strong>${targetText}</strong> sobre Saúde e Prevenção!
+        ${pillsVisual}
+        <p style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 8px 0 12px;">
+          ${victorySubtitle}
         </p>
         <div class="prize-alert-banner">
           🎉 Mostre esta tela para a equipe e retire o seu brinde!
@@ -2863,13 +3172,99 @@
       }, 1000);
     }
 
-    function showSuccessPopup() {
+    // Popup quando a rodada de 3 chances termina sem atingir a meta do brinde
+    function showRoundFinishedPopup(roundHits, totalChances, lastWasCorrect) {
+      const popupCard = document.getElementById("popupCard");
+      let secondsLeft = 8;
+      const totalSeconds = 8;
+
+      popupCard.innerHTML = `
+        <div class="feedback-icon-wrap" style="background: #fee2e2; color: #dc2626; font-size: 2.8rem;">🎯</div>
+        <h2 class="popup-title" style="color: #b91c1c; font-size: 1.65rem;">RODADA FINALIZADA!</h2>
+
+        <div style="display: flex; justify-content: center; gap: 12px; margin: 12px 0 16px;">
+          ${roundAttempts.map((res, i) => `
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; font-weight: 800; font-size: 1.15rem; color: #fff; background: ${res === 'hit' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)'}; box-shadow: 0 4px 10px ${res === 'hit' ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)'};">
+                ${res === 'hit' ? '✓' : '✕'}
+              </span>
+              <span style="font-size: 0.72rem; font-weight: 700; color: #64748b;">Chance ${i + 1}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <p style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0 0 6px;">
+          Você acertou <strong style="color: #059669;">${roundHits}</strong> de <strong>${totalChances}</strong> perguntas!
+        </p>
+        <p style="font-size: 0.95rem; color: #64748b; margin-top: 0; margin-bottom: 12px;">
+          A meta para o brinde era de <strong>${prizeTargetHits}</strong> acerto(s).
+        </p>
+
+        ${!lastWasCorrect && activeQuestion ? `
+          <div class="wrong-answer-correction" style="margin-bottom: 12px;">
+            A resposta correta era: <strong>${activeQuestion.resposta_correta_texto}</strong>
+          </div>
+        ` : ''}
+
+        ${activeQuestion && activeQuestion.explicacao ? `
+          <div class="did-you-know-card ${!lastWasCorrect ? 'wrong' : ''}" style="margin-bottom: 14px;">
+            <div class="dyk-header">
+              <span class="dyk-badge">${lastWasCorrect ? '💡 VOCÊ SABIA?' : '📖 APRENDENDO COM O SESI'}</span>
+            </div>
+            <p class="dyk-text">${activeQuestion.explicacao}</p>
+          </div>
+        ` : ''}
+
+        <div class="prize-countdown-box" style="margin-top: 10px;">
+          <div class="prize-countdown-text">
+            <span>⏱️</span>
+            <span>Próxima rodada em <strong class="prize-countdown-num" id="roundCountdown">${secondsLeft}</strong>s</span>
+          </div>
+          <div class="prize-progress-track">
+            <div class="prize-progress-fill" id="roundProgressBar" style="width: 100%; background: linear-gradient(90deg, #64748b, #0f766e);"></div>
+          </div>
+        </div>
+
+        <button class="btn-modal-continue" style="width: 100%; margin-top: 12px; background: linear-gradient(135deg, #0f766e, #0e5e57);" onclick="finishRoundAndReset();">
+          Novo Participante ➔
+        </button>
+      `;
+
+      openPopup();
+
+      if (popupAutoTimer) clearInterval(popupAutoTimer);
+      popupAutoTimer = setInterval(() => {
+        secondsLeft--;
+        const countdownEl = document.getElementById("roundCountdown");
+        const barEl = document.getElementById("roundProgressBar");
+        if (countdownEl) countdownEl.textContent = secondsLeft;
+        if (barEl) {
+          const pct = Math.max(0, (secondsLeft / totalSeconds) * 100);
+          barEl.style.width = pct + "%";
+        }
+        if (secondsLeft <= 0) {
+          clearInterval(popupAutoTimer);
+          popupAutoTimer = null;
+          finishRoundAndReset();
+        }
+      }, 1000);
+    }
+
+    function showSuccessPopup(chanceIndex = null, totalChances = 3) {
       const popupCard = document.getElementById("popupCard");
       
-      const missingForPrize = prizeTargetHits - consecutiveHits;
-      const prizeTip = (missingForPrize === 1)
-        ? "🔥 <strong>Incrível! Falta apenas 1 acerto para ganhar o brinde!</strong>"
-        : `🎯 <strong>Você acertou ${consecutiveHits} seguida(s)! Faltam ${missingForPrize} para o brinde!</strong>`;
+      let chanceNotice = "";
+      if (!chancesModeEnabled) {
+        const missingForPrize = prizeTargetHits - consecutiveHits;
+        const prizeTip = (missingForPrize === 1)
+          ? "🔥 <strong>Incrível! Falta apenas 1 acerto para ganhar o brinde!</strong>"
+          : `🎯 <strong>Você acertou ${consecutiveHits} seguida(s)! Faltam ${missingForPrize} para o brinde!</strong>`;
+        chanceNotice = `
+          <div style="background: #fefce8; border: 1.5px solid #fef08a; padding: 12px 16px; border-radius: 14px; margin-top: 14px; color: #854d0e; font-size: 0.98rem;">
+            ${prizeTip}
+          </div>
+        `;
+      }
 
       popupCard.innerHTML = `
         <div class="feedback-icon-wrap success">🎉</div>
@@ -2883,14 +3278,11 @@
           <p class="dyk-text">${activeQuestion.explicacao}</p>
         </div>
 
-        <div style="background: #fefce8; border: 1.5px solid #fef08a; padding: 12px 16px; border-radius: 14px; margin-top: 14px; color: #854d0e; font-size: 0.98rem;">
-          ${prizeTip}
-        </div>
-        <p style="margin-top: 12px; font-weight: 700; color: #059669; font-size: 1.05rem;">
-          Total de acertos na sessão: <strong>${totalHits}</strong>
-        </p>
+        ${chanceNotice}
 
-        ${advanceMode === 'manual' ? '<button class="btn-modal-continue" onclick="closePopup()">Continuar ➔</button>' : ''}
+        <button class="btn-modal-continue" onclick="closePopup()">
+          ${advanceMode === 'auto' ? 'Continuar ➔ (ou aguarde 5s)' : 'Continuar ➔'}
+        </button>
       `;
 
       openPopup();
@@ -2903,12 +3295,14 @@
       }
     }
 
-    function handleWrongAnswer(hadStreak = false) {
+    function handleWrongAnswer(hadStreak = false, chanceIndex = null, totalChances = 3) {
       const popupCard = document.getElementById("popupCard");
       const title = "Não foi dessa vez!";
-      const streakMsg = hadStreak 
-        ? "<div style='background: #fff1f2; border: 1px solid #fecdd3; padding: 10px 14px; border-radius: 12px; margin-top: 10px; color: #be123c; font-size: 0.92rem;'>A sequência para o brinde recomeçou. Gire a roleta e tente novamente!</div>"
-        : "";
+      
+      let chanceNotice = "";
+      if (!chancesModeEnabled && hadStreak) {
+        chanceNotice = "<div style='background: #fff1f2; border: 1px solid #fecdd3; padding: 10px 14px; border-radius: 12px; margin-top: 10px; color: #be123c; font-size: 0.92rem;'>A sequência para o brinde recomeçou. Gire a roleta e tente novamente!</div>";
+      }
 
       popupCard.innerHTML = `
         <div class="feedback-icon-wrap error">💡</div>
@@ -2926,12 +3320,11 @@
           <p class="dyk-text">${activeQuestion.explicacao}</p>
         </div>
 
-        ${streakMsg}
-        <div class="popup-score-summary" style="margin-top: 14px;">
-          Placar atual: <span style="color: #059669; font-weight: 800;">${totalHits} acertos</span> &bull; <span style="color: #dc2626; font-weight: 800;">${totalMisses} erros</span>
-        </div>
+        ${chanceNotice}
 
-        ${advanceMode === 'manual' ? '<button class="btn-modal-continue" onclick="closePopup()">Tentar Novamente ➔</button>' : ''}
+        <button class="btn-modal-continue" onclick="closePopup()">
+          ${advanceMode === 'auto' ? 'Continuar ➔ (ou aguarde 5s)' : 'Continuar ➔'}
+        </button>
       `;
 
       openPopup();
@@ -2949,6 +3342,7 @@
 
     function closePopup() {
       if (popupAutoTimer) {
+        clearInterval(popupAutoTimer);
         clearTimeout(popupAutoTimer);
         popupAutoTimer = null;
       }
@@ -2969,20 +3363,57 @@
     let logoTapCount = 0;
     let logoTapTimeout = null;
 
-    function handleLogoTap() {
+    function handleLogoTap(e) {
+      if (e) e.stopPropagation();
       logoTapCount++;
       if (logoTapTimeout) clearTimeout(logoTapTimeout);
 
+      if (navigator.vibrate) {
+        try { navigator.vibrate(25); } catch(err) {}
+      }
+
+      showTapIndicator(logoTapCount);
+
       if (logoTapCount >= 3) {
         logoTapCount = 0;
+        hideTapIndicator();
         openMonitorPanel();
         return;
       }
 
       logoTapTimeout = setTimeout(() => {
         logoTapCount = 0;
-      }, 900);
+        hideTapIndicator();
+      }, 1400);
     }
+
+    function showTapIndicator(count) {
+      let badge = document.getElementById("logoTapBadge");
+      if (!badge) {
+        badge = document.createElement("div");
+        badge.id = "logoTapBadge";
+        badge.className = "logo-tap-badge";
+        const brand = document.querySelector(".brand-title");
+        if (brand) brand.appendChild(badge);
+      }
+      if (badge) {
+        badge.textContent = `Acesso Monitor: ${count}/3`;
+        badge.classList.add("visible");
+      }
+    }
+
+    function hideTapIndicator() {
+      const badge = document.getElementById("logoTapBadge");
+      if (badge) badge.classList.remove("visible");
+    }
+
+    // Atalhos de teclado para a equipe do evento (F2 ou Ctrl+M ou Alt+M)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "F2" || ((e.ctrlKey || e.altKey) && (e.key === "m" || e.key === "M"))) {
+        e.preventDefault();
+        openMonitorPanel();
+      }
+    });
 
     function openMonitorPanel() {
       updateMonitorPanelUI();
@@ -2993,74 +3424,262 @@
       document.getElementById("monitorModal").classList.remove("active");
     }
 
+    function showToast(msg) {
+      let toast = document.getElementById("monitorToast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "monitorToast";
+        toast.className = "monitor-toast";
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add("visible");
+      if (window.toastTimer) clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.remove("visible");
+      }, 2600);
+    }
+
+    // Módulo 1: Formato das Rodadas
+    function setChancesMode(enabled) {
+      chancesModeEnabled = enabled;
+      localStorage.setItem("sesi_chances_mode", enabled ? "true" : "false");
+      roundAttempts = [];
+      consecutiveHits = 0;
+      totalHits = 0;
+      totalMisses = 0;
+      updateScoreboard();
+      updateMonitorPanelUI();
+      showToast(enabled ? "🎯 Modo 3 Chances ativado com sucesso!" : "⚡ Modo Sequência Clássica ativado!");
+    }
+
+    // Módulo 2: Meta do Brinde
     function setPrizeTarget(target) {
       prizeTargetHits = target;
-      localStorage.setItem("sesi_prize_target", target);
+      localStorage.setItem("sesi_prize_target", target.toString());
       if (consecutiveHits > prizeTargetHits) consecutiveHits = prizeTargetHits;
       updatePrizeDots();
       updateMonitorPanelUI();
+      showToast(`🎁 Meta para brinde ajustada para ${target} acerto(s)!`);
     }
 
+    // Módulo 3: Velocidade do Giro da Roleta
+    function setSpinSpeed(ms) {
+      spinDurationMs = ms;
+      localStorage.setItem("sesi_spin_duration", ms.toString());
+      updateMonitorPanelUI();
+      const label = ms <= 2800 ? "Rápido (2.6s)" : (ms >= 5000 ? "Calmo (5.5s)" : "Normal (4.4s)");
+      showToast(`⚡ Velocidade da roleta definida como: ${label}!`);
+    }
+
+    // Módulo 4: Modo de Avanço das Explicações
     function setAdvanceMode(mode) {
       advanceMode = mode;
       localStorage.setItem("sesi_advance_mode", mode);
       updateMonitorPanelUI();
+      showToast(mode === 'auto' ? "⏳ Avanço automático em 5s ativado!" : "👆 Avanço manual com botão ativado!");
     }
 
+    // Módulo 5: Efeitos Sonoros
     function setSoundState(enabled) {
       soundEnabled = enabled;
       localStorage.setItem("sesi_sound_enabled", enabled ? "true" : "false");
       updateMonitorPanelUI();
+      showToast(enabled ? "🔊 Sons e efeitos ativados!" : "🔇 Jogo silenciado (Modo Mudo)!");
     }
 
-    function resetShiftMetrics() {
-      if (confirm("Deseja realmente zerar todas as métricas acumuladas do turno do evento?")) {
-        shiftMetrics = { totalQuestions: 0, totalHits: 0, totalPrizes: 0 };
-        saveShiftMetrics();
+    function testAudio() {
+      if (!soundEnabled) {
+        soundEnabled = true;
+        localStorage.setItem("sesi_sound_enabled", "true");
         updateMonitorPanelUI();
+      }
+      playSectorChimeSound();
+      showToast("🎵 Teste de áudio executado com sucesso!");
+    }
+
+    // Módulo 6: Ferramentas & Simulações Rápidas
+    function testPrizeScreen() {
+      closeMonitorPanel();
+      setTimeout(() => {
+        showPrizePopup(3, 3);
+      }, 250);
+    }
+
+    function reloadQuestionPool() {
+      availableQuestions = [...allQuestions];
+      updateMonitorPanelUI();
+      showToast(`🔄 Banco restaurado: todas as ${allQuestions.length} perguntas ativas!`);
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(() => {
+          showToast("⛶ Modo Tela Cheia ativado!");
+        }).catch(err => {
+          showToast("Aviso: Tela cheia não suportada ou bloqueada pelo navegador.");
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().then(() => {
+            showToast("Modo normal restaurado.");
+          });
+        }
       }
     }
 
+    // Módulo 7: Relatório do Turno e Reset
+    function copyShiftReport() {
+      const acc = shiftMetrics.totalQuestions > 0 
+        ? Math.round((shiftMetrics.totalHits / shiftMetrics.totalQuestions) * 100) 
+        : 0;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('pt-BR');
+      const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const text = `📊 RELATÓRIO DO EVENTO - ROLETA DA SAÚDE SESI
+Data: ${dateStr} às ${timeStr}
+• Total de Perguntas Respondidas: ${shiftMetrics.totalQuestions}
+• Total de Brindes Entregues: ${shiftMetrics.totalPrizes}
+• Taxa de Assertividade: ${acc}%
+• Formato Atual: ${chancesModeEnabled ? '3 Chances por Rodada' : 'Sequência Clássica'}
+• Meta de Brinde: ${prizeTargetHits} acerto(s)
+• Perguntas no banco ativo: ${availableQuestions.length}/${allQuestions.length}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("📋 Relatório do turno copiado com sucesso!");
+        }).catch(() => {
+          alert(text);
+        });
+      } else {
+        alert(text);
+      }
+    }
+
+    let resetConfirmActive = false;
+    let resetConfirmTimeout = null;
+
+    function resetShiftMetrics() {
+      const btn = document.getElementById("btnResetShift");
+      
+      // Confirmação em 2 toques segura para tablets (evita bloqueio de window.confirm)
+      if (!resetConfirmActive) {
+        resetConfirmActive = true;
+        if (btn) {
+          btn.innerHTML = "⚠️ Confirmar Zerar?";
+          btn.style.background = "#dc2626";
+          btn.style.color = "#ffffff";
+          btn.style.borderColor = "#b91c1c";
+        }
+        showToast("Toque novamente no botão vermelho para confirmar o zeramento.");
+        
+        if (resetConfirmTimeout) clearTimeout(resetConfirmTimeout);
+        resetConfirmTimeout = setTimeout(() => {
+          resetConfirmActive = false;
+          if (btn) {
+            btn.innerHTML = "🗑️ Zerar Métricas";
+            btn.style.background = "";
+            btn.style.color = "";
+            btn.style.borderColor = "";
+          }
+        }, 3500);
+        return;
+      }
+
+      // Executa o zeramento
+      resetConfirmActive = false;
+      if (resetConfirmTimeout) clearTimeout(resetConfirmTimeout);
+      if (btn) {
+        btn.innerHTML = "🗑️ Zerar Métricas";
+        btn.style.background = "";
+        btn.style.color = "";
+        btn.style.borderColor = "";
+      }
+
+      shiftMetrics = { totalQuestions: 0, totalHits: 0, totalPrizes: 0 };
+      saveShiftMetrics();
+
+      totalHits = 0;
+      totalMisses = 0;
+      consecutiveHits = 0;
+      roundAttempts = [];
+      updateScoreboard();
+
+      // Sempre que zerar/reiniciar, re-embaralha todas as perguntas
+      availableQuestions = shuffleArray([...allQuestions]);
+
+      updateMonitorPanelUI();
+      showToast("🗑️ Métricas zeradas e banco de perguntas re-embaralhado!");
+    }
+
     function updateMonitorPanelUI() {
+      // 1. Atualiza botões do Modo 3 Chances
+      const btnChancesOn = document.getElementById("btnChancesOn");
+      const btnChancesOff = document.getElementById("btnChancesOff");
+      if (btnChancesOn && btnChancesOff) {
+        btnChancesOn.classList.toggle("active", chancesModeEnabled);
+        btnChancesOff.classList.toggle("active", !chancesModeEnabled);
+      }
+
+      // 2. Atualiza textos do seletor de meta conforme o modo
+      const lblTarget = document.getElementById("prizeTargetLabel");
+      const descTarget = document.getElementById("prizeTargetDesc");
+      const btnT1 = document.getElementById("btnTarget1");
+      const btnT2 = document.getElementById("btnTarget2");
+      const btnT3 = document.getElementById("btnTarget3");
+      if (chancesModeEnabled) {
+        if (lblTarget) lblTarget.textContent = "🎁 Meta para Brinde (Modo 3 Chances)";
+        if (descTarget) descTarget.textContent = "Quantos acertos das 3 tentativas garantem o brinde:";
+        if (btnT1) btnT1.textContent = "1 acerto em 3 (Fácil)";
+        if (btnT2) btnT2.textContent = "2 acertos em 3 (Equilibrado)";
+        if (btnT3) btnT3.textContent = "3 acertos em 3 (Gabarito)";
+      } else {
+        if (lblTarget) lblTarget.textContent = "🎁 Meta de Sequência para o Brinde";
+        if (descTarget) descTarget.textContent = "Quantidade de acertos seguidos necessários:";
+        if (btnT1) btnT1.textContent = "1 acerto (Fácil)";
+        if (btnT2) btnT2.textContent = "2 seguidas (Equilibrado)";
+        if (btnT3) btnT3.textContent = "3 seguidas (Desafiador)";
+      }
+
       // Atualiza botões de meta
       [1, 2, 3].forEach(n => {
         const btn = document.getElementById(`btnTarget${n}`);
         if (btn) {
-          if (prizeTargetHits === n) btn.classList.add("active");
-          else btn.classList.remove("active");
+          btn.classList.toggle("active", prizeTargetHits === n);
         }
       });
 
-      // Atualiza modo de avanço
+      // 3. Atualiza botões de velocidade
+      const btnSpeedFast = document.getElementById("btnSpeedFast");
+      const btnSpeedNormal = document.getElementById("btnSpeedNormal");
+      const btnSpeedSlow = document.getElementById("btnSpeedSlow");
+      if (btnSpeedFast && btnSpeedNormal && btnSpeedSlow) {
+        btnSpeedFast.classList.toggle("active", spinDurationMs === 2600);
+        btnSpeedNormal.classList.toggle("active", spinDurationMs === 4400);
+        btnSpeedSlow.classList.toggle("active", spinDurationMs === 5500);
+      }
+
+      // 4. Atualiza modo de avanço
       const btnAuto = document.getElementById("btnAdvAuto");
       const btnManual = document.getElementById("btnAdvManual");
       if (btnAuto && btnManual) {
-        if (advanceMode === 'auto') {
-          btnAuto.classList.add("active");
-          btnManual.classList.remove("active");
-        } else {
-          btnAuto.classList.remove("active");
-          btnManual.classList.add("active");
-        }
+        btnAuto.classList.toggle("active", advanceMode === 'auto');
+        btnManual.classList.toggle("active", advanceMode === 'manual');
       }
 
-      // Atualiza som
+      // 5. Atualiza som
       const btnSOn = document.getElementById("btnSoundOn");
       const btnSOff = document.getElementById("btnSoundOff");
       if (btnSOn && btnSOff) {
-        if (soundEnabled) {
-          btnSOn.classList.add("active");
-          btnSOff.classList.remove("active");
-        } else {
-          btnSOn.classList.remove("active");
-          btnSOff.classList.add("active");
-        }
+        btnSOn.classList.toggle("active", soundEnabled);
+        btnSOff.classList.toggle("active", !soundEnabled);
       }
 
-      // Atualiza métricas
+      // 7. Atualiza métricas acumuladas
       const elTotal = document.getElementById("mTotalPlays");
       const elPrizes = document.getElementById("mTotalPrizes");
       const elAcc = document.getElementById("mAccuracy");
+      const elQL = document.getElementById("mQuestionsLeft");
       if (elTotal) elTotal.textContent = shiftMetrics.totalQuestions;
       if (elPrizes) elPrizes.textContent = shiftMetrics.totalPrizes;
       if (elAcc) {
@@ -3069,6 +3688,7 @@
           : 0;
         elAcc.textContent = `${pct}%`;
       }
+      if (elQL) elQL.textContent = `${availableQuestions.length}/${allQuestions.length}`;
     }
 
     // ==========================================
@@ -3086,7 +3706,9 @@
       totalHits = 0;
       totalMisses = 0;
       consecutiveHits = 0;
-      availableQuestions = [...allQuestions];
+      roundAttempts = [];
+      // SEMPRE QUE REINICIAR EMBARALHE AS PERGUNTAS E NUNCA DEIXE REPETIR
+      availableQuestions = shuffleArray([...allQuestions]);
       updateScoreboard();
       const hubBtn = document.getElementById("spinHubBtn");
       if (hubBtn) hubBtn.classList.add("idle-pulse");
