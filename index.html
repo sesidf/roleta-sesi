@@ -2607,7 +2607,7 @@
         .map((opt, idx) => `Opção ${letters[idx]}: ${opt}`)
         .join('. ');
 
-      const fullText = `Pergunta: ${activeQuestion.pergunta}. ${optionsText}`;
+      const fullText = `${activeQuestion.pergunta}. ${optionsText}`;
 
       const utterance = new SpeechSynthesisUtterance(fullText);
       utterance.lang = 'pt-BR';
