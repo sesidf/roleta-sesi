@@ -1,0 +1,3103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Roleta da Saúde - SESI</title>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #f0fdf9 0%, #f8fafc 60%, #e2e8f0 100%);
+      --card-white: #ffffff;
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #ccfbf1;
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(226, 232, 240, 0.9);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+      --shadow-wheel: 0 25px 50px -12px rgba(15, 23, 42, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg-gradient);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      overscroll-behavior: none;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(8px, 1.8vh, 16px) clamp(10px, 2vw, 20px);
+      touch-action: manipulation;
+    }
+
+    /* Container Principal Totalmente Adaptativo */
+    .tablet-screen {
+      width: 100%;
+      max-width: 1350px;
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: clamp(6px, 1.2vh, 14px);
+      position: relative;
+    }
+
+    /* Header Adaptativo e Fluido */
+    .tablet-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: clamp(8px, 1.4vh, 12px) clamp(12px, 2vw, 22px);
+      border-radius: clamp(14px, 2vw, 20px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+      gap: 12px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.5vw, 14px);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-img {
+      height: clamp(34px, 5vh, 46px);
+      width: auto;
+      max-width: clamp(120px, 18vw, 165px);
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+      transition: transform 0.2s ease;
+    }
+
+    .brand-divider {
+      width: 1.5px;
+      height: clamp(24px, 4vh, 34px);
+      background: #cbd5e1;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--text-dark);
+      line-height: 1.15;
+    }
+
+    .brand-text p {
+      font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+      line-height: 1.1;
+    }
+
+    /* ========================================================
+       PLACAR SUPERIOR EM CHIPS (DESIGN MODERNO & MINIMALISTA)
+       ======================================================== */
+    .stats-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1.2vw, 12px);
+      flex-wrap: nowrap;
+    }
+
+    .stat-chip {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: clamp(10px, 1.5vw, 14px);
+      padding: clamp(5px, 0.9vh, 7px) clamp(8px, 1.2vw, 14px);
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1vw, 10px);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+
+    .stat-chip:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Ícone circular elegante em vetor */
+    .stat-badge-icon {
+      width: clamp(26px, 3.5vw, 32px);
+      height: clamp(26px, 3.5vw, 32px);
+      border-radius: clamp(7px, 1vw, 9px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-badge-icon.icon-success {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .stat-badge-icon.icon-danger {
+      background: #fff1f2;
+      color: #e11d48;
+    }
+
+    .stat-badge-icon.icon-prize {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .stat-chip-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-chip-label {
+      font-size: clamp(0.58rem, 0.92vw, 0.68rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #475569;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+
+    .stat-chip-val {
+      font-size: clamp(1.15rem, 2vw, 1.4rem);
+      font-weight: 900;
+      line-height: 1;
+      color: #0f172a;
+    }
+
+    .stat-chip.hits-chip .stat-chip-val {
+      color: #059669;
+    }
+
+    .stat-chip.misses-chip .stat-chip-val {
+      color: #dc2626;
+    }
+
+    /* Chip de Meta de Brinde */
+    .stat-chip.prize-chip {
+      background: #ffffff;
+      border: 1px solid #fde68a;
+      box-shadow: 0 1px 3px rgba(245, 158, 11, 0.06);
+    }
+
+    .prize-title-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 3px;
+    }
+
+    .prize-streak-tag {
+      background: #fef3c7;
+      color: #b45309;
+      font-size: clamp(0.52rem, 0.8vw, 0.58rem);
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      padding: 1.5px 5px;
+      border-radius: 5px;
+      line-height: 1;
+    }
+
+    /* Cápsulas de progresso do brinde */
+    .prize-dots-container {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prize-dot, .prize-pill {
+      width: clamp(13px, 1.8vw, 18px);
+      height: clamp(5px, 0.8vw, 7px);
+      border-radius: 999px;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .prize-dot.active, .prize-pill.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: #059669;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+      transform: scaleY(1.2);
+    }
+
+    .stat-chip.prize-chip.is-complete {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+    }
+
+    .stat-chip.prize-chip.is-complete .prize-dot.active,
+    .stat-chip.prize-chip.is-complete .prize-pill.active {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-color: #d97706;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+    }
+
+    .prize-alert-banner {
+      background: #ecfdf5;
+      border: 2px dashed #059669;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #065f46;
+      margin: 16px 0;
+      line-height: 1.4;
+    }
+
+    .btn-continue-prize {
+      background: linear-gradient(135deg, #059669, #0d9488);
+      color: #ffffff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .btn-continue-prize:active {
+      transform: scale(0.96);
+    }
+
+    /* Caixa e Barra de Contagem Regressiva do Brinde */
+    .prize-countdown-box {
+      margin: 14px 0 16px;
+      padding: 12px 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .prize-countdown-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prize-countdown-num {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 2px 9px;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 1.15rem;
+      min-width: 32px;
+      display: inline-block;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .prize-progress-track {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .prize-progress-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 999px;
+      transition: width 1s linear;
+    }
+
+    /* Arena Central da Roleta Totalmente Adaptativa */
+    .tablet-arena {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 0;
+      padding: clamp(4px, 1vh, 12px);
+    }
+
+    /* Moldura da Roleta (Escala dinamicamente aproveitando o máximo da tela) */
+    .wheel-outer-rim {
+      position: relative;
+      width: min(860px, min(92vw, 75vh));
+      height: min(860px, min(92vw, 75vh));
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    canvas#wheelCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: block;
+      /* Sombra de leve, suave e moderna */
+      box-shadow: 0 14px 35px -4px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Ponteiro Superior Esculpido com Física de Batida */
+    .wheel-pointer-container {
+      position: absolute;
+      top: clamp(-24px, -3.8vmin, -34px);
+      left: 50%;
+      transform: translateX(-50%);
+      transform-origin: 50% clamp(14px, 2vmin, 20px);
+      width: clamp(36px, 6.5vmin, 54px);
+      height: clamp(48px, 8.5vmin, 70px);
+      z-index: 25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.26));
+      transition: transform 0.07s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .pointer-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    /* ========================================================
+       BOTÃO CENTRAL GIRAR (Minimalista & Proporcional)
+       ======================================================== */
+    .wheel-spin-hub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(78px, 19%, 140px);
+      height: clamp(78px, 19%, 140px);
+      border-radius: 50%;
+      background: #ffffff;
+      border: clamp(2.5px, 0.4vmin, 4px) solid #f1f5f9;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12), 0 1px 4px rgba(15, 23, 42, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 30;
+      outline: none;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .wheel-spin-hub:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+      border-color: #e2e8f0;
+    }
+
+    .wheel-spin-hub:active {
+      transform: translate(-50%, -50%) scale(0.95);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+    }
+
+    .wheel-spin-hub .hub-main-text {
+      font-size: clamp(0.85rem, 2.5vmin, 1.25rem);
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: clamp(1px, 0.4vmin, 2.5px);
+      text-transform: uppercase;
+      line-height: 1;
+      transition: color 0.18s ease;
+    }
+
+    .wheel-spin-hub:hover .hub-main-text {
+      color: #0d9488;
+    }
+
+    /* Animação suave de pulso ("respiração") quando ocioso - Call To Action para eventos */
+    @keyframes hubBreath {
+      0%, 100% {
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12), 0 0 0 0 rgba(13, 148, 136, 0.45);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16), 0 0 0 10px rgba(13, 148, 136, 0);
+        transform: translate(-50%, -50%) scale(1.035);
+      }
+    }
+
+    .wheel-spin-hub.idle-pulse {
+      animation: hubBreath 2.6s ease-in-out infinite;
+    }
+
+    /* Estado quando a roleta está girando */
+    .wheel-spin-hub.is-spinning {
+      pointer-events: none;
+      animation: none !important;
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      transform: translate(-50%, -50%) scale(0.97);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .wheel-spin-hub.is-spinning .hub-main-text {
+      color: #94a3b8;
+      font-size: clamp(0.72rem, 2vmin, 0.95rem);
+      letter-spacing: 1px;
+    }
+
+    /* Rodapé Adaptativo */
+    .tablet-footer-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .tablet-footer-tip {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: clamp(7px, 1.2vh, 9px) clamp(12px, 1.8vw, 18px);
+      border-radius: 14px;
+      font-size: clamp(0.78rem, 1.2vw, 0.88rem);
+      font-weight: 700;
+      color: #64748b;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Botão Reiniciar no Rodapé */
+    .btn-footer-reset {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: clamp(6px, 1vh, 7px) clamp(12px, 1.6vw, 16px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .btn-footer-reset:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .btn-footer-reset:hover .icon-reset svg {
+      transform: rotate(-180deg);
+    }
+
+    .btn-footer-reset:active {
+      transform: scale(0.97);
+      background: #f8fafc;
+    }
+
+    .stat-badge-icon.icon-reset {
+      background: #f1f5f9;
+      color: #475569;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .stat-badge-icon.icon-reset svg {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-footer-reset:hover .stat-badge-icon.icon-reset {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .btn-footer-reset .reset-val {
+      font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    /* ========================================================
+       MODAL DE PERGUNTA PARA TABLET (Touch-First & Confortável)
+       ======================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 24px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 28px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 32px 36px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      animation: modalPop 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-theme {
+      background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+      color: #0f766e;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(13, 148, 136, 0.2);
+    }
+
+    .badge-difficulty {
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-difficulty.facil {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .badge-difficulty.medio {
+      background: #fefce8;
+      color: #854d0e;
+      border-color: #fef08a;
+    }
+
+    .badge-difficulty.dificil {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fed7aa;
+    }
+
+    .badge-difficulty.muito-dificil {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .modal-question {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    .modal-options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .touch-option-btn {
+      width: 100%;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.35;
+      transition: all 0.18s ease;
+      min-height: 60px;
+    }
+
+    .touch-option-btn:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .touch-option-btn:active:not(:disabled) {
+      transform: scale(0.98);
+      background: #e2e8f0;
+    }
+
+    .option-letter-badge {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      background: #e2e8f0;
+      color: #334155;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.05rem;
+      transition: all 0.2s ease;
+    }
+
+    .touch-option-btn.correct {
+      background: #ecfdf5 !important;
+      border-color: #10b981 !important;
+      color: #065f46 !important;
+    }
+
+    .touch-option-btn.correct .option-letter-badge {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .touch-option-btn.wrong {
+      background: #fef2f2 !important;
+      border-color: #ef4444 !important;
+      color: #991b1b !important;
+      animation: shake 0.4s ease;
+    }
+
+    .touch-option-btn.wrong .option-letter-badge {
+      background: #ef4444;
+      color: #ffffff;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* ========================================================
+       POPUP DE FEEDBACK (Tablet Full Experience)
+       ======================================================== */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 600;
+      padding: 24px;
+    }
+
+    .popup-overlay.active {
+      display: flex;
+    }
+
+    .popup-card {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 36px 40px;
+      max-width: 580px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+      animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .feedback-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+    }
+
+    .feedback-icon-wrap.success {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .feedback-icon-wrap.error {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .popup-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+
+    .feedback-quote {
+      background: #f0fdfa;
+      border-left: 5px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0f766e;
+      line-height: 1.45;
+      margin-top: 14px;
+      text-align: left;
+    }
+
+    .popup-score-summary {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .popup-score-summary strong {
+      color: var(--text-dark);
+    }
+
+    /* ========================================================
+       SISTEMA RESPONSIVO & ADAPTATIVO COMPLETO (Mobile, Tablet, Desktop)
+       ======================================================== */
+
+    /* Telas em Modo Retrato / Vertical (Tablets em pé, Celulares e Monitores Verticais) */
+    @media (orientation: portrait) {
+      .wheel-outer-rim {
+        /* Aproveita até 88% da largura do tablet mantendo proporção ideal */
+        width: min(840px, min(88vw, 68vh));
+        height: min(840px, min(88vw, 68vh));
+      }
+    }
+
+    /* Telas Médias / Tablets Compactos (<= 720px) */
+    @media (max-width: 720px) {
+      .tablet-header {
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 14px;
+      }
+      .brand-title {
+        width: 100%;
+        justify-content: center;
+      }
+      .stats-group {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Telas Grandes em Modo Paisagem (Monitores, TVs e Desktop com boa altura) */
+    @media (min-height: 850px) and (orientation: landscape) {
+      .wheel-outer-rim {
+        width: min(880px, min(88vw, 76vh));
+        height: min(880px, min(88vw, 76vh));
+      }
+    }
+
+    /* Smartphones & Telas Pequenas (<= 640px) */
+    @media (max-width: 640px) {
+      body {
+        padding: 8px 10px;
+      }
+      .tablet-header {
+        padding: 8px 12px;
+        gap: 8px;
+        border-radius: 14px;
+      }
+      .brand-title {
+        gap: 8px;
+      }
+      .brand-logo-img {
+        height: 32px;
+      }
+      .brand-divider {
+        height: 24px;
+      }
+      .brand-text h1 {
+        font-size: 1.05rem;
+      }
+      .brand-text p {
+        display: none; /* Oculta subtítulo em telas compactas para economizar espaço vertical */
+      }
+
+      /* Chips compactos e fluídos para caberem lado a lado */
+      .stats-group {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+      }
+      .stat-chip {
+        flex: 1;
+        padding: 5px 6px;
+        gap: 6px;
+        justify-content: center;
+        border-radius: 10px;
+      }
+      .stat-badge-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+      }
+      .stat-badge-icon svg {
+        width: 12px;
+        height: 12px;
+      }
+      .stat-chip-label {
+        font-size: 0.52rem;
+        margin-bottom: 1px;
+      }
+      .stat-chip-val {
+        font-size: 0.98rem;
+      }
+      .prize-streak-tag {
+        font-size: 0.48rem;
+        padding: 1px 4px;
+      }
+      .prize-dot, .prize-pill {
+        width: 11px;
+        height: 4.5px;
+      }
+
+      /* Rodapé no Mobile */
+      .tablet-footer-bar {
+        flex-direction: column-reverse;
+        gap: 6px;
+      }
+      .tablet-footer-tip {
+        width: 100%;
+        justify-content: center;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+      }
+      .btn-footer-reset {
+        width: 100%;
+        justify-content: center;
+        padding: 6px 14px;
+      }
+
+      /* Modal de Pergunta no Mobile */
+      .modal-box {
+        padding: 18px 16px;
+        border-radius: 20px;
+        gap: 12px;
+        max-height: 88dvh;
+      }
+      .modal-question {
+        font-size: 1.1rem;
+        line-height: 1.35;
+      }
+      .touch-option-btn {
+        padding: 11px 12px;
+        min-height: 48px;
+        font-size: 0.92rem;
+        border-radius: 14px;
+        gap: 10px;
+      }
+      .option-letter-badge {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        font-size: 0.92rem;
+      }
+
+      /* Popup de Feedback no Mobile */
+      .popup-card {
+        padding: 24px 18px;
+        border-radius: 20px;
+      }
+      .feedback-icon-wrap {
+        width: 60px;
+        height: 60px;
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+      }
+      .popup-title {
+        font-size: 1.35rem;
+      }
+    }
+
+    /* Modo Paisagem Compacto (Smartphones deitados ou telas com altura reduzida <= 560px) */
+    @media (max-height: 560px) and (orientation: landscape) {
+      body {
+        padding: 4px 12px;
+      }
+      .tablet-screen {
+        gap: 6px;
+      }
+      .tablet-header {
+        padding: 4px 14px;
+        flex-direction: row;
+      }
+      .brand-logo-img {
+        height: 28px;
+      }
+      .brand-text p {
+        display: none;
+      }
+      .brand-text h1 {
+        font-size: 0.95rem;
+      }
+      .wheel-outer-rim {
+        width: min(350px, 64vh);
+        height: min(350px, 64vh);
+      }
+      .tablet-footer-tip {
+        display: none; /* Em modo paisagem curto, prioriza o espaço para a roleta */
+      }
+      .tablet-footer-bar {
+        justify-content: center;
+      }
+      .btn-footer-reset {
+        padding: 4px 14px;
+      }
+    }
+
+    /* ========================================================
+       ESTILOS: ACESSIBILIDADE DE VOZ, FEEDBACK EDUCATIVO & MODO MONITOR
+       ======================================================== */
+    .modal-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-voice-read {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .btn-voice-read:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+      transform: translateY(-1px);
+    }
+
+    .btn-voice-read.speaking {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+      animation: pulseVoice 1.4s infinite;
+    }
+
+    @keyframes pulseVoice {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    }
+
+    /* Cartão "Você Sabia?" Educativo */
+    .did-you-know-card {
+      background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+      border: 1.5px solid #99f6e4;
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.08);
+    }
+
+    .did-you-know-card.wrong {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border-color: #fde68a;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+    }
+
+    .dyk-header {
+      margin-bottom: 6px;
+    }
+
+    .dyk-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #ccfbf1;
+      color: #0f766e;
+    }
+
+    .did-you-know-card.wrong .dyk-badge {
+      background: #fef08a;
+      color: #854d0e;
+    }
+
+    .dyk-text {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: #0f766e;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .did-you-know-card.wrong .dyk-text {
+      color: #854d0e;
+    }
+
+    .wrong-answer-correction {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #991b1b;
+      font-size: 1rem;
+      margin-top: 8px;
+      line-height: 1.35;
+    }
+
+    .btn-modal-continue {
+      background: linear-gradient(135deg, #0d9488, #0f766e);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 24px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+      width: 100%;
+    }
+
+    .btn-modal-continue:active {
+      transform: scale(0.98);
+    }
+
+    /* Modal do Monitor do Estande (Modo Evento) */
+    .monitor-box {
+      max-width: 680px;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 28px 32px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .monitor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 14px;
+    }
+
+    .monitor-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .monitor-icon {
+      font-size: 1.8rem;
+    }
+
+    .monitor-header h2 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .monitor-header p {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .btn-close-monitor {
+      background: #f1f5f9;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-close-monitor:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .monitor-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .monitor-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .monitor-card-label {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .monitor-card-desc {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.3;
+    }
+
+    .monitor-btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .monitor-opt-btn {
+      flex: 1;
+      min-width: 130px;
+      padding: 9px 12px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+    }
+
+    .monitor-opt-btn:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+
+    .monitor-opt-btn.active {
+      background: #ecfdf5;
+      border-color: #059669;
+      color: #065f46;
+      font-weight: 800;
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+    }
+
+    .monitor-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 6px 0;
+    }
+
+    .m-stat-pill {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .m-stat-val {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .m-stat-sub {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .btn-monitor-danger {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #be123c;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 4px;
+    }
+
+    .btn-monitor-danger:hover {
+      background: #fee2e2;
+      border-color: #fda4af;
+    }
+
+    .btn-monitor-save {
+      background: linear-gradient(135deg, #0d9488, #0f766e);
+      color: #ffffff;
+      border: none;
+      padding: 13px 24px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-monitor-save:active {
+      transform: scale(0.98);
+    }
+
+    .btn-footer-config {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: clamp(6px, 1vh, 7px) clamp(12px, 1.6vw, 16px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .btn-footer-config:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .btn-footer-config:hover .icon-config svg {
+      transform: rotate(45deg);
+    }
+
+    .stat-badge-icon.icon-config {
+      background: #f1f5f9;
+      color: #475569;
+      transition: all 0.2s ease;
+    }
+
+    .btn-footer-config:hover .stat-badge-icon.icon-config {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .btn-footer-config .config-val {
+      font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tablet-screen">
+
+    <!-- Header do Tablet (Sem abas!) -->
+    <header class="tablet-header">
+      <div class="brand-title">
+        <img src="ss_LogoComBox.svg" onerror="this.onerror=null; this.src='https://sesisaudedf.org.br/wp-content/uploads/2024/02/ss_LogoComBox.svg';" alt="SESI Saúde" class="brand-logo-img" onclick="handleLogoTap()" title="Toque 3 vezes rápido para abrir o Painel do Monitor" style="cursor: pointer;">
+        <div class="brand-divider"></div>
+        <div class="brand-text">
+          <h1>Roleta da Saúde</h1>
+          <p>Gire a roleta e teste seus conhecimentos</p>
+        </div>
+      </div>
+
+      <div class="stats-group">
+        <!-- Chip de Acertos -->
+        <div class="stat-chip hits-chip" title="Total de acertos na sessão">
+          <div class="stat-badge-icon icon-success">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="stat-chip-info">
+            <span class="stat-chip-label">Acertos</span>
+            <span class="stat-chip-val" id="hits-counter">0</span>
+          </div>
+        </div>
+
+        <!-- Chip de Erros -->
+        <div class="stat-chip misses-chip" title="Total de erros na sessão">
+          <div class="stat-badge-icon icon-danger">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+          <div class="stat-chip-info">
+            <span class="stat-chip-label">Erros</span>
+            <span class="stat-chip-val" id="misses-counter">0</span>
+          </div>
+        </div>
+
+        <!-- Chip Meta do Brinde -->
+        <div class="stat-chip prize-chip" id="prize-chip" title="Acerte a meta de perguntas para ganhar o brinde!">
+          <div class="stat-badge-icon icon-prize">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 12 20 22 4 22 4 12"></polyline>
+              <rect x="2" y="7" width="20" height="5"></rect>
+              <line x1="12" y1="22" x2="12" y2="7"></line>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </svg>
+          </div>
+          <div class="stat-chip-info">
+            <div class="prize-title-row">
+              <span class="stat-chip-label">Brinde</span>
+              <span class="prize-streak-tag" id="prizeStreakTag">3 seguidas</span>
+            </div>
+            <div class="prize-dots-container" id="prizeDotsContainer">
+              <span class="prize-pill" id="p-dot-1" title="Acerto 1 de 3"></span>
+              <span class="prize-pill" id="p-dot-2" title="Acerto 2 de 3"></span>
+              <span class="prize-pill" id="p-dot-3" title="Acerto 3 de 3"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Arena Central com a Roleta -->
+    <main class="tablet-arena">
+      <div class="wheel-outer-rim" id="rimContainer" onclick="spinWheel()">
+        <!-- Ponteiro no topo com animação de tick -->
+        <div class="wheel-pointer-container" id="wheelPointer">
+          <svg class="pointer-svg" viewBox="0 0 40 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="pointerGrad" x1="20" y1="4" x2="20" y2="52" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fb7185"/>
+                <stop offset="45%" stop-color="#f43f5e"/>
+                <stop offset="100%" stop-color="#be123c"/>
+              </linearGradient>
+            </defs>
+            <!-- Corpo esculpido da seta -->
+            <path d="M 20 52 C 18.5 49, 8 22, 8 16 A 12 12 0 1 1 32 16 C 32 22, 21.5 49, 20 52 Z" 
+                  fill="url(#pointerGrad)" 
+                  stroke="#ffffff" 
+                  stroke-width="2.5" 
+                  stroke-linejoin="round"/>
+            <!-- Brilho de reflexo superior -->
+            <path d="M 14 14 A 6 6 0 0 1 26 14" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.8" stroke-linecap="round"/>
+            <!-- Pino central pivot -->
+            <circle cx="20" cy="16" r="5" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1"/>
+            <circle cx="20" cy="16" r="2.5" fill="#be123c"/>
+          </svg>
+        </div>
+
+        <!-- Canvas 900x900 em alta resolução -->
+        <canvas id="wheelCanvas" width="900" height="900"></canvas>
+
+        <!-- Botão Central: Minimalista e com Pulso Suave Convidativo -->
+        <div class="wheel-spin-hub idle-pulse" id="spinHubBtn" onclick="event.stopPropagation(); spinWheel();" title="Toque para girar a roleta">
+          <span class="hub-main-text" id="hubMainText">Girar</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Rodapé do Tablet com Dica e Botão Reiniciar -->
+    <footer class="tablet-footer-bar">
+      <div class="tablet-footer-tip">
+        <span>💡</span>
+        <span>Toque no botão <strong>GIRAR</strong> ou na roleta para sortear uma pergunta!</span>
+      </div>
+
+      <button class="btn-footer-reset" onclick="resetGame(true)" title="Reiniciar jogo e zerar placar da rodada">
+        <div class="stat-badge-icon icon-reset">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M8 16H3v5"></path>
+          </svg>
+        </div>
+        <div class="stat-chip-info">
+          <span class="stat-chip-label">Ação</span>
+          <span class="stat-chip-val reset-val">Reiniciar Jogo</span>
+        </div>
+      </button>
+    </footer>
+
+  </div>
+
+  <!-- MODAL DE PERGUNTAS (Touch Friendly para Tablet) -->
+  <div id="questionModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header-top">
+        <div class="modal-header-badges">
+          <span id="modalTheme" class="badge-theme">Tema</span>
+          <span id="modalDifficulty" class="badge-difficulty" style="display:none;">Fácil</span>
+        </div>
+        <button id="btnVoiceRead" class="btn-voice-read" onclick="toggleVoiceSpeech()" title="Ouvir pergunta em voz alta">
+          <span class="voice-icon">🔊</span>
+          <span>Ouvir Pergunta</span>
+        </button>
+      </div>
+      <div id="modalQuestionText" class="modal-question">Carregando pergunta...</div>
+      <div id="modalOptions" class="modal-options-grid"></div>
+    </div>
+  </div>
+
+  <!-- POPUP DE FEEDBACK (Confetes, Pontuação, Motivação & Você Sabia?) -->
+  <div id="feedbackPopup" class="popup-overlay">
+    <div id="popupCard" class="popup-card"></div>
+  </div>
+
+  <!-- MODAL DO MONITOR DO ESTANDE (Modo Evento SESI) -->
+  <div id="monitorModal" class="modal-overlay">
+    <div class="modal-box monitor-box">
+      <div class="monitor-header">
+        <div class="monitor-title-wrap">
+          <span class="monitor-icon">⚙️</span>
+          <div>
+            <h2>Painel do Monitor do Estande</h2>
+            <p>Controles rápidos para a equipe SESI no evento</p>
+          </div>
+        </div>
+        <button class="btn-close-monitor" onclick="closeMonitorPanel()" title="Fechar">✕</button>
+      </div>
+
+      <div class="monitor-grid">
+        <!-- 1. Meta do Brinde -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">🎯 Meta para Ganhar o Brinde</label>
+          <p class="monitor-card-desc">Controle o ritmo de entrega conforme o estoque de brindes no dia:</p>
+          <div class="monitor-btn-group" id="streakSelector">
+            <button class="monitor-opt-btn" onclick="setPrizeTarget(1)" id="btnTarget1">1 acerto (Fácil / Brinde rápido)</button>
+            <button class="monitor-opt-btn" onclick="setPrizeTarget(2)" id="btnTarget2">2 acertos seguidos (Equilibrado)</button>
+            <button class="monitor-opt-btn" onclick="setPrizeTarget(3)" id="btnTarget3">3 acertos seguidos (Desafiador)</button>
+          </div>
+        </div>
+
+        <!-- 2. Modo de Avanço dos Feedbacks -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">⏱️ Modo de Avanço da Tela</label>
+          <p class="monitor-card-desc">Defina se a explicação fecha sozinha ou aguarda o participante ler:</p>
+          <div class="monitor-btn-group">
+            <button class="monitor-opt-btn" onclick="setAdvanceMode('auto')" id="btnAdvAuto">
+              Automático (Avança em 5s)
+            </button>
+            <button class="monitor-opt-btn" onclick="setAdvanceMode('manual')" id="btnAdvManual">
+              Manual (Tocar em Continuar)
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Áudio e Efeitos -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">🔊 Efeitos Sonoros da Roleta</label>
+          <p class="monitor-card-desc">Sons da roleta, giros e comemorações:</p>
+          <div class="monitor-btn-group">
+            <button class="monitor-opt-btn" onclick="setSoundState(true)" id="btnSoundOn">Som Ligado 🔊</button>
+            <button class="monitor-opt-btn" onclick="setSoundState(false)" id="btnSoundOff">Mudo 🔇</button>
+          </div>
+        </div>
+
+        <!-- 4. Métricas do Turno e Reset -->
+        <div class="monitor-card">
+          <label class="monitor-card-label">📊 Métricas Acumuladas do Evento</label>
+          <div class="monitor-stats-row">
+            <div class="m-stat-pill">
+              <span class="m-stat-val" id="mTotalPlays">0</span>
+              <span class="m-stat-sub">Perguntas</span>
+            </div>
+            <div class="m-stat-pill">
+              <span class="m-stat-val" id="mTotalPrizes">0</span>
+              <span class="m-stat-sub">Brindes</span>
+            </div>
+            <div class="m-stat-pill">
+              <span class="m-stat-val" id="mAccuracy">0%</span>
+              <span class="m-stat-sub">Acertos</span>
+            </div>
+          </div>
+          <button class="btn-monitor-danger" onclick="resetShiftMetrics()">
+            🗑️ Zerar Métricas do Turno
+          </button>
+        </div>
+      </div>
+
+      <div class="monitor-footer">
+        <button class="btn-monitor-save" onclick="closeMonitorPanel()">Salvar e Voltar ao Jogo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. BANCO DE PERGUNTAS - ROLETA DA SAÚDE
+    // ==========================================
+    const allQuestions = [
+      // CATEGORIA 1 – Saúde da Família
+      {
+        nivel: 1,
+        dificuldade: "Fácil",
+        tema: "Saúde da Família",
+        pergunta: "Quantos copos de água um adulto deve consumir por dia, em média?",
+        opcoes: [
+          "2 a 3 copos",
+          "6 a 8 copos",
+          "12 a 15 copos"
+        ],
+        resposta_correta_texto: "6 a 8 copos",
+        explicacao: "Beber de 6 a 8 copos (cerca de 2 litros) mantém o organismo hidratado, melhora a digestão e ajuda na regulação da pressão e dos rins."
+      },
+      {
+        nivel: 2,
+        dificuldade: "Médio",
+        tema: "Saúde da Família",
+        pergunta: "Qual hábito ajuda a prevenir a gripe e outras infecções?",
+        opcoes: [
+          "Compartilhar copos e talheres",
+          "Lavar as mãos frequentemente",
+          "Ficar sem ventilação em ambientes fechados"
+        ],
+        resposta_correta_texto: "Lavar as mãos frequentemente",
+        explicacao: "A higienização correta das mãos com água e sabão elimina vírus e bactérias antes que cheguem à boca, olhos ou nariz."
+      },
+      {
+        nivel: 3,
+        dificuldade: "Difícil",
+        tema: "Saúde da Família",
+        pergunta: "Qual destes fatores mais influencia a saúde de uma família a longo prazo?",
+        opcoes: [
+          "Realizar exames apenas quando surgem sintomas",
+          "Combinar alimentação equilibrada, atividade física e acompanhamento preventivo",
+          "Utilizar medicamentos sem prescrição"
+        ],
+        resposta_correta_texto: "Combinar alimentação equilibrada, atividade física e acompanhamento preventivo",
+        explicacao: "Prevenir doenças através de hábitos saudáveis e consultas regulares é muito mais seguro e eficaz do que apenas remediar sintomas tardios."
+      },
+      {
+        nivel: 4,
+        dificuldade: "Muito Difícil",
+        tema: "Saúde da Família",
+        pergunta: "Uma criança está com todas as vacinas em dia. Isso significa que ela:",
+        opcoes: [
+          "Nunca ficará doente",
+          "Está protegida contra várias doenças importantes",
+          "Precisa mais ir ao médico frequentemente"
+        ],
+        resposta_correta_texto: "Está protegida contra várias doenças importantes",
+        explicacao: "A vacinação fortalece o sistema imunológico contra diversas enfermidades graves e transmissíveis, protegendo a criança e toda a comunidade."
+      },
+      {
+        nivel: 4,
+        dificuldade: "Muito Difícil",
+        tema: "Saúde da Família",
+        pergunta: "O que é mais importante para uma vida saudável?",
+        opcoes: [
+          "Fazer exames regularmente",
+          "Ter hábitos saudáveis diariamente",
+          "Tomar medicamentos preventivamente"
+        ],
+        resposta_correta_texto: "Ter hábitos saudáveis diariamente",
+        explicacao: "A saúde é construída no dia a dia com boa alimentação, sono de qualidade, exercícios e bem-estar físico e mental."
+      },
+
+      // CATEGORIA 2 – Saúde da Mulher
+      {
+        nivel: 1,
+        dificuldade: "Fácil",
+        tema: "Saúde da Mulher",
+        pergunta: "Uma mulher se sente saudável e não apresenta sintomas. Ela deve continuar fazendo exames preventivos?",
+        opcoes: [
+          "Sim, porque algumas doenças podem não apresentar sinais no início",
+          "Não, porque exames são necessários apenas quando há sintomas",
+          "Somente após os 60 anos"
+        ],
+        resposta_correta_texto: "Sim, porque algumas doenças podem não apresentar sinais no início",
+        explicacao: "Muitas alterações e doenças evoluem de forma silenciosa no início; identificá-las precocemente aumenta drasticamente as chances de cura."
+      },
+      {
+        nivel: 2,
+        dificuldade: "Médio",
+        tema: "Saúde da Mulher",
+        pergunta: "Qual exame ajuda a prevenir o câncer do colo do útero?",
+        opcoes: [
+          "Mamografia",
+          "Ultrassom",
+          "Preventivo (Papanicolau)"
+        ],
+        resposta_correta_texto: "Preventivo (Papanicolau)",
+        explicacao: "O Papanicolau detecta lesões pré-cancerosas no colo do útero, permitindo o tratamento antes que se transformem em câncer."
+      },
+      {
+        nivel: 3,
+        dificuldade: "Difícil",
+        tema: "Saúde da Mulher",
+        pergunta: "Além do câncer do colo do útero, o exame preventivo também pode identificar:",
+        opcoes: [
+          "Infecções e alterações celulares",
+          "Diabetes",
+          "Osteoporose"
+        ],
+        resposta_correta_texto: "Infecções e alterações celulares",
+        explicacao: "O exame ginecológico preventivo também aponta inflamações, infecções fúngicas ou bacterianas e sinais de infecção pelo HPV."
+      },
+      {
+        nivel: 4,
+        dificuldade: "Muito Difícil",
+        tema: "Saúde da Mulher",
+        pergunta: "Qual fator aumenta significativamente o risco para câncer de colo do útero?",
+        opcoes: [
+          "Infecção persistente pelo HPV",
+          "Consumo de leite",
+          "Prática de atividade física"
+        ],
+        resposta_correta_texto: "Infecção persistente pelo HPV",
+        explicacao: "A infecção persistente por subtipos oncogênicos do papilomavírus humano (HPV) é a causa primária desse tipo de câncer, sendo prevenível por vacina e preservativo."
+      },
+
+      // CATEGORIA 3 – Saúde do Homem
+      {
+        nivel: 1,
+        dificuldade: "Fácil",
+        tema: "Saúde do Homem",
+        pergunta: "Um homem tem casos de problemas graves de saúde na família. O que é mais recomendado?",
+        opcoes: [
+          "Ignorar porque cada pessoa é diferente",
+          "Informar o médico e manter acompanhamento regular",
+          "Fazer exames apenas quando sentir sintomas"
+        ],
+        resposta_correta_texto: "Informar o médico e manter acompanhamento regular",
+        explicacao: "O histórico familiar aponta riscos genéticos herdados; ao saber disso, o médico programa exames preventivos antes de qualquer complicação."
+      },
+      {
+        nivel: 2,
+        dificuldade: "Médio",
+        tema: "Saúde do Homem",
+        pergunta: "O exame PSA está relacionado à saúde de qual órgão?",
+        opcoes: [
+          "Coração",
+          "Próstata",
+          "Pulmão"
+        ],
+        resposta_correta_texto: "Próstata",
+        explicacao: "O exame de sangue PSA mede o Antígeno Prostático Específico, auxiliando no diagnóstico precoce de alterações e tumores da próstata."
+      },
+      {
+        nivel: 3,
+        dificuldade: "Difícil",
+        tema: "Saúde do Homem",
+        pergunta: "Qual dos fatores abaixo pode aumentar o risco de câncer de próstata?",
+        opcoes: [
+          "Histórico familiar",
+          "Beber água regularmente",
+          "Caminhar diariamente"
+        ],
+        resposta_correta_texto: "Histórico familiar",
+        explicacao: "Homens com parentes de 1º grau (pai ou irmão) com histórico têm risco dobrado, devendo iniciar o rastreamento a partir dos 45 anos."
+      },
+      {
+        nivel: 4,
+        dificuldade: "Muito Difícil",
+        tema: "Saúde do Homem",
+        pergunta: "A principal causa da procura tardia por atendimento médico entre os homens está frequentemente relacionada a:",
+        opcoes: [
+          "Excesso de exames disponíveis",
+          "Barreiras culturais e resistência ao cuidado preventivo",
+          "Falta de profissionais de saúde"
+        ],
+        resposta_correta_texto: "Barreiras culturais e resistência ao cuidado preventivo",
+        explicacao: "Preconceitos culturais e a falsa ideia de que 'homem não adoece' atrasam o diagnóstico; prevenção é autocuidado e responsabilidade com quem você ama."
+      },
+
+      // CATEGORIA 4 – Saúde Cardiovascular
+      {
+        nivel: 1,
+        dificuldade: "Fácil",
+        tema: "Saúde Cardiovascular",
+        pergunta: "Como é chamada a pressão arterial elevada?",
+        opcoes: [
+          "Hipotensão",
+          "Hipertensão",
+          "Hipertermia"
+        ],
+        resposta_correta_texto: "Hipertensão",
+        explicacao: "A hipertensão força o coração e os vasos sanguíneos; quando não tratada, é a principal causa de infarto e acidente vascular cerebral (AVC)."
+      },
+      {
+        nivel: 2,
+        dificuldade: "Médio",
+        tema: "Saúde Cardiovascular",
+        pergunta: "Qual destes fatores aumenta o risco de infarto?",
+        opcoes: [
+          "Tabagismo",
+          "Hidratação adequada",
+          "Caminhada regular"
+        ],
+        resposta_correta_texto: "Tabagismo",
+        explicacao: "O cigarro agride a parede interna dos vasos, acelera a formação de placas obstrutivas e aumenta a formação de coágulos coronarianos."
+      },
+      {
+        nivel: 3,
+        dificuldade: "Difícil",
+        tema: "Saúde Cardiovascular",
+        pergunta: "Qual destas situações merece maior atenção médica imediata?",
+        opcoes: [
+          "Dor de cabeça leve após um dia cansativo",
+          "Dor forte no peito acompanhada de falta de ar",
+          "Sono após o almoço"
+        ],
+        resposta_correta_texto: "Dor forte no peito acompanhada de falta de ar",
+        explicacao: "Dor torácica com aperto, falta de ar ou suor frio é sintoma típico de infarto; procurar a emergência médica imediatamente salva vidas."
+      },
+      {
+        nivel: 4,
+        dificuldade: "Muito Difícil",
+        tema: "Saúde Cardiovascular",
+        pergunta: "Qual combinação representa maior risco cardiovascular?",
+        opcoes: [
+          "Sedentarismo, hipertensão e tabagismo",
+          "Exercício físico e alimentação saudável",
+          "Ingestão adequada de água e sono regular"
+        ],
+        resposta_correta_texto: "Sedentarismo, hipertensão e tabagismo",
+        explicacao: "Essa tríade destrutiva multiplica o risco de parada cardíaca, sobrecarregando os vasos arteriais e o miocárdio."
+      },
+
+      // CATEGORIA 5 – Pergunta Extra
+      {
+        nivel: 1,
+        dificuldade: "Fácil",
+        tema: "Pergunta Extra",
+        pergunta: "O que é mais importante para uma vida saudável?",
+        opcoes: [
+          "Fazer exames regularmente",
+          "Ter hábitos saudáveis diariamente",
+          "Tomar medicamentos preventivamente"
+        ],
+        resposta_correta_texto: "Ter hábitos saudáveis diariamente",
+        explicacao: "Alimentar-se com equilíbrio, praticar atividades físicas e cuidar do sono são os maiores escudos naturais contra enfermidades."
+      },
+      {
+        nivel: 1,
+        dificuldade: "Fácil",
+        tema: "Pergunta Extra",
+        pergunta: "Quem deve cuidar da saúde?",
+        opcoes: [
+          "Apenas idosos",
+          "Apenas quem tem alguma doença",
+          "Todas as pessoas, em qualquer idade"
+        ],
+        resposta_correta_texto: "Todas as pessoas, em qualquer idade",
+        explicacao: "O autocuidado deve começar na infância e continuar por toda a vida para assegurar longevidade com qualidade e disposição."
+      },
+      {
+        nivel: 2,
+        dificuldade: "Médio",
+        tema: "Pergunta Extra",
+        pergunta: "Qual é o melhor momento para procurar cuidar da saúde?",
+        opcoes: [
+          "Antes que os problemas apareçam",
+          "Quando os sintomas estiverem muito fortes",
+          "Apenas durante campanhas de saúde"
+        ],
+        resposta_correta_texto: "Antes que os problemas apareçam",
+        explicacao: "A medicina preventiva é mais barata, menos invasiva e muito mais eficaz do que remediar doenças quando os sintomas já estão graves."
+      }
+    ];
+
+    const motivationalQuotes = [
+      "Excelente resposta! O cuidado preventivo é o melhor caminho para uma vida longa e saudável.",
+      "Parabéns! Você demonstrou ótimos conhecimentos sobre saúde e prevenção!",
+      "Mandou muito bem! Hábitos saudáveis no dia a dia fazem toda a diferença.",
+      "Perfeito! A prevenção e o acompanhamento regular são essenciais em todas as idades.",
+      "Sensacional! Cuidar da saúde antes que os problemas apareçam é a melhor decisão!",
+      "Brilhante! Cuidar de você e de quem você ama é um ato de responsabilidade e carinho."
+    ];
+
+    // ==========================================
+    // 2. CONFIGURAÇÃO DA ROLETA & MODO EVENTO
+    // ==========================================
+    const sectors = [
+      { label: "Saúde da Família", color: "#0d9488" },
+      { label: "Saúde Cardiovascular", color: "#dc2626" },
+      { label: "Saúde do Homem", color: "#2563eb" },
+      { label: "Saúde da Mulher", color: "#db2777" },
+      { label: "Pergunta Extra", color: "#d97706" }
+    ];
+
+    // Configurações persistentes do Modo Monitor do Estande
+    let prizeTargetHits = parseInt(localStorage.getItem("sesi_prize_target") || "3", 10);
+    if (![1, 2, 3].includes(prizeTargetHits)) prizeTargetHits = 3;
+
+    let advanceMode = localStorage.getItem("sesi_advance_mode") || "auto"; // 'auto' ou 'manual'
+    let soundEnabled = localStorage.getItem("sesi_sound_enabled") !== "false";
+
+    // Métricas do Turno do Evento (acumuladas no dia)
+    let shiftMetrics = {
+      totalQuestions: 0,
+      totalHits: 0,
+      totalPrizes: 0
+    };
+    try {
+      const savedM = localStorage.getItem("sesi_shift_metrics");
+      if (savedM) shiftMetrics = Object.assign(shiftMetrics, JSON.parse(savedM));
+    } catch (e) {}
+
+    function saveShiftMetrics() {
+      try {
+        localStorage.setItem("sesi_shift_metrics", JSON.stringify(shiftMetrics));
+      } catch (e) {}
+    }
+
+    let totalHits = 0;
+    let totalMisses = 0;
+    let consecutiveHits = 0;
+    let availableQuestions = [...allQuestions];
+    let isSpinning = false;
+    let currentRotation = 0;
+    let popupAutoTimer = null;
+
+    // ==========================================
+    // SISTEMA DE ÁUDIO REALISTA (Web Audio API)
+    // ==========================================
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Som suave, acolhedor e amigável da roleta (Estilo marimba/gotícula de madeira)
+    function playRouletteClickSound(speedRatio = 0.5) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        // Variação orgânica suave de tom para toque musical agradável
+        const jitter = 0.97 + Math.random() * 0.06;
+        const now = ctx.currentTime;
+
+        // Frequência base musical acolhedora (timbre quente de marimba)
+        const baseFreq = (560 + (1 - speedRatio) * 70) * jitter;
+
+        // Camada 1: Tom puro suave (onda senoidal com ataque macio e decaimento musical)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+
+        // Micro-inflexão de afinação simulando impacto macio de madeira
+        osc.frequency.setValueAtTime(baseFreq * 1.18, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.012);
+
+        // Volume suave e balanceado, sem ruídos agressivos
+        const tapVol = 0.13 + (1 - speedRatio) * 0.06;
+        const decayTime = 0.032 + (1 - speedRatio) * 0.018;
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(tapVol, now + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + decayTime);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + decayTime + 0.01);
+
+        // Camada 2: Ressonância harmônica sutil (estilo kalimba/madeira relaxante)
+        const harmOsc = ctx.createOscillator();
+        const harmGain = ctx.createGain();
+        harmOsc.type = "sine";
+        harmOsc.frequency.setValueAtTime(baseFreq * 1.5, now);
+
+        harmGain.gain.setValueAtTime(0.001, now);
+        harmGain.gain.linearRampToValueAtTime(tapVol * 0.28, now + 0.002);
+        harmGain.gain.exponentialRampToValueAtTime(0.0005, now + 0.022);
+
+        harmOsc.connect(harmGain);
+        harmGain.connect(ctx.destination);
+        harmOsc.start(now);
+        harmOsc.stop(now + 0.025);
+
+        // Camada 3: Micro-toque aveludado (filtro passa-baixas macio, sem chiado agudo)
+        const snapLen = Math.floor(ctx.sampleRate * 0.008);
+        const noiseBuffer = ctx.createBuffer(1, snapLen, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < snapLen; i++) {
+          output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (snapLen * 0.3));
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        const lowpass = ctx.createBiquadFilter();
+        lowpass.type = "lowpass";
+        lowpass.frequency.setValueAtTime(750, now);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.03, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.007);
+
+        noise.connect(lowpass);
+        lowpass.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        noise.start(now);
+      } catch (e) {}
+    }
+
+    // Som suave de brisa harmônica no giro inicial
+    function playWheelWhooshSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const dur = 1.2;
+
+        // Acorde harmônico sutil e relaxante em vez de ruído branco áspero
+        const freqs = [330, 440];
+        freqs.forEach(f => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(f * 0.85, now);
+          osc.frequency.exponentialRampToValueAtTime(f * 1.1, now + 0.35);
+          osc.frequency.exponentialRampToValueAtTime(f * 0.9, now + dur);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.035, now + 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + dur + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    // Sino cristalino suave e alegre quando a roleta para na fatia escolhida (Tríade Maior)
+    function playSectorChimeSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const chimeNotes = [
+          { f: 783.99, t: 0.0, d: 0.45 },   // Sol 5 (acolhedor)
+          { f: 1046.50, t: 0.07, d: 0.55 }, // Dó 6 (luminoso)
+          { f: 1318.51, t: 0.15, d: 0.7 }   // Mi 6 (alegre)
+        ];
+        chimeNotes.forEach(note => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          const startT = now + note.t;
+          osc.frequency.setValueAtTime(note.f, startT);
+          gain.gain.setValueAtTime(0, startT);
+          gain.gain.linearRampToValueAtTime(0.18, startT + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0006, startT + note.d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + note.d + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    // Som suave e agradável de clique no botão GIRAR
+    function playButtonClickSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.06);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.2, now + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      } catch (e) {}
+    }
+
+    // Som de acerto comum (jingle alegre com brilho)
+    function playCorrectSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          const startT = ctx.currentTime + idx * 0.07;
+          osc.frequency.setValueAtTime(freq, startT);
+          gain.gain.setValueAtTime(0.0, startT);
+          gain.gain.linearRampToValueAtTime(0.28, startT + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, startT + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + 0.36);
+        });
+      } catch (e) {}
+    }
+
+    // Som triunfal especial: FANFARRA DO BRINDE! (3 acertos seguidos)
+    function playPrizeFanfareSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const melody = [
+          { f: 523.25, d: 0.14, t: 0 },
+          { f: 659.25, d: 0.14, t: 0.14 },
+          { f: 783.99, d: 0.14, t: 0.28 },
+          { f: 1046.50, d: 0.45, t: 0.42 },
+          { f: 1318.51, d: 0.65, t: 0.56 }
+        ];
+        melody.forEach(item => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          const startT = ctx.currentTime + item.t;
+          osc.frequency.setValueAtTime(item.f, startT);
+          gain.gain.setValueAtTime(0.0, startT);
+          gain.gain.linearRampToValueAtTime(0.35, startT + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, startT + item.d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + item.d + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    // Som suave de resposta errada (acolhedor)
+    function playWrongSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const notes = [320, 240];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          const startT = ctx.currentTime + idx * 0.13;
+          osc.frequency.setValueAtTime(freq, startT);
+          gain.gain.setValueAtTime(0.2, startT);
+          gain.gain.exponentialRampToValueAtTime(0.01, startT + 0.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startT);
+          osc.stop(startT + 0.22);
+        });
+      } catch (e) {}
+    }
+
+    // Oscilação física do ponteiro da roleta com deflexão dinâmica
+    function triggerPointerTick(speedRatio = 0.5) {
+      const pointer = document.getElementById("wheelPointer");
+      if (pointer) {
+        const defAngle = -10 - (1 - speedRatio) * 9;
+        pointer.style.transform = `translateX(-50%) rotate(${defAngle}deg)`;
+        const returnMs = Math.round(35 + (1 - speedRatio) * 45);
+        setTimeout(() => {
+          pointer.style.transform = "translateX(-50%) rotate(0deg)";
+        }, returnMs);
+      }
+      if (navigator.vibrate) {
+        try { navigator.vibrate(speedRatio < 0.25 ? 16 : 8); } catch (e) {}
+      }
+    }
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const numSectors = sectors.length;
+    const arc = (2 * Math.PI) / numSectors;
+
+    const rimStudElements = [];
+
+    function createRimStuds() {
+      // Borda branca e pinos externos removidos para design minimalista
+      rimStudElements.length = 0;
+    }
+
+    createRimStuds();
+
+    function updateRimChaserLights() {
+      const total = rimStudElements.length;
+      if (total === 0) return;
+      const activeIdx = Math.floor(((currentRotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) / (2 * Math.PI)) * total) % total;
+      for (let i = 0; i < total; i++) {
+        if (i === activeIdx || i === (activeIdx + 1) % total) {
+          rimStudElements[i].classList.add("lit");
+        } else {
+          rimStudElements[i].classList.remove("lit");
+        }
+      }
+    }
+
+    function flashRimCelebration() {
+      rimStudElements.forEach(s => s.classList.add("lit"));
+      setTimeout(() => rimStudElements.forEach(s => s.classList.remove("lit")), 160);
+      setTimeout(() => rimStudElements.forEach(s => s.classList.add("lit")), 320);
+      setTimeout(() => rimStudElements.forEach(s => s.classList.remove("lit")), 600);
+    }
+
+    function drawWheel(highlightIndex = -1) {
+      const radius = canvas.width / 2;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numSectors; i++) {
+        const angle = currentRotation + i * arc;
+        
+        ctx.beginPath();
+        ctx.fillStyle = sectors[i].color;
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, angle, angle + arc);
+        ctx.lineTo(radius, radius);
+        ctx.fill();
+
+        // Efeito sutil de iluminação radial para profundidade 3D elegante
+        const radialLight = ctx.createRadialGradient(radius, radius, radius * 0.15, radius, radius, radius);
+        radialLight.addColorStop(0, "rgba(255, 255, 255, 0.16)");
+        radialLight.addColorStop(0.6, "rgba(255, 255, 255, 0.02)");
+        radialLight.addColorStop(1, "rgba(0, 0, 0, 0.07)");
+        ctx.fillStyle = radialLight;
+        ctx.fill();
+
+        // Linhas divisórias nítidas e elegantes entre as fatias
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
+        ctx.stroke();
+
+        // Se for a fatia vencedora em destaque, aplica brilho de vitória
+        if (highlightIndex === i) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(radius, radius);
+          ctx.arc(radius, radius, radius - 4, angle, angle + arc);
+          ctx.lineTo(radius, radius);
+          ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+          ctx.fill();
+          ctx.lineWidth = 9;
+          ctx.strokeStyle = "#facc15";
+          ctx.shadowColor = "#facc15";
+          ctx.shadowBlur = 26;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Renderização dos textos sempre orientados para leitura natural (nunca de cabeça para baixo)
+        const midAngle = angle + arc / 2;
+        const normAngle = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const isBottomHalf = (normAngle > 0.05 && normAngle < Math.PI - 0.05);
+
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(midAngle);
+        ctx.translate(radius * 0.62, 0);
+        ctx.rotate(isBottomHalf ? -Math.PI / 2 : Math.PI / 2);
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = highlightIndex === i ? "900 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" : "900 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+        ctx.shadowColor = highlightIndex === i ? "rgba(234, 179, 8, 0.95)" : "rgba(0, 0, 0, 0.65)";
+        ctx.shadowBlur = highlightIndex === i ? 14 : 6;
+        
+        const label = sectors[i].label;
+        if (label === "Saúde da Família") {
+          ctx.fillText("Saúde da", 0, -16);
+          ctx.fillText("Família", 0, 16);
+        } else if (label === "Saúde da Mulher") {
+          ctx.fillText("Saúde da", 0, -16);
+          ctx.fillText("Mulher", 0, 16);
+        } else if (label === "Saúde do Homem") {
+          ctx.fillText("Saúde do", 0, -16);
+          ctx.fillText("Homem", 0, 16);
+        } else if (label === "Saúde Cardiovascular") {
+          ctx.font = highlightIndex === i ? "900 24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" : "900 22px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+          ctx.fillText("Saúde", 0, -15);
+          ctx.fillText("Cardiovascular", 0, 15);
+        } else if (label === "Pergunta Extra") {
+          ctx.fillText("Pergunta", 0, -16);
+          ctx.fillText("Extra", 0, 16);
+        } else {
+          ctx.fillText(label, 0, 0);
+        }
+        ctx.restore();
+      }
+
+      // Borda sutil no contorno externo da roleta para arremate perfeito
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius - 1.5, 0, 2 * Math.PI);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.stroke();
+    }
+
+    drawWheel();
+
+    // ==========================================
+    // 3. ANIMAÇÃO DE GIRO E FÍSICA REALISTA
+    // ==========================================
+    let lastPinIndex = -1;
+
+    function spinWheel() {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      // Som realista de clique no botão e vento de alta rotação
+      playButtonClickSound();
+      playWheelWhooshSound();
+
+      // Feedback visual no Botão Central
+      const hubBtn = document.getElementById("spinHubBtn");
+      const hubText = document.getElementById("hubMainText");
+      if (hubBtn) {
+        hubBtn.classList.remove("idle-pulse");
+        hubBtn.classList.add("is-spinning");
+      }
+      if (hubText) hubText.textContent = "Girando...";
+
+      // Vibração tátil no toque (se suportado no tablet)
+      if (navigator.vibrate) {
+        try { navigator.vibrate(30); } catch (e) {}
+      }
+
+      // 6 a 10 voltas completas + ângulo de parada aleatório
+      const spinRounds = 6 + Math.random() * 4.5;
+      const extraAngle = Math.random() * 2 * Math.PI;
+      const totalSpin = spinRounds * 2 * Math.PI + extraAngle;
+      const duration = 4400; // Tempo perfeito de suspense dramático
+      const start = performance.now();
+      const initialRotation = currentRotation;
+      lastPinIndex = -1;
+
+      function animate(time) {
+        const elapsed = time - start;
+        const rawProgress = Math.min(elapsed / duration, 1);
+        
+        // Curva de física com desaceleração quintic com suspense dramático
+        const easeOut = 1 - Math.pow(1 - rawProgress, 4.0);
+
+        // Velocidade relativa atual (1.0 = rápida, 0.04 = quase parando)
+        const speedRatio = Math.max(0.04, Math.pow(1 - rawProgress, 2.5));
+
+        currentRotation = initialRotation + totalSpin * easeOut;
+        drawWheel();
+        updateRimChaserLights();
+
+        // Detecção de passagem de pino (20 pinos na circunferência = pi/10)
+        const pinAngle = Math.PI / 10;
+        const currentPin = Math.floor(currentRotation / pinAngle);
+        if (currentPin !== lastPinIndex) {
+          lastPinIndex = currentPin;
+          // Som de clique mecânico com afinação e peso dinâmicos + oscilação física do ponteiro
+          playRouletteClickSound(speedRatio);
+          triggerPointerTick(speedRatio);
+        }
+
+        if (rawProgress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // Fase de acomodação elástica / micro settle bounce (física real de lingueta mecânica)
+          const targetRotation = initialRotation + totalSpin;
+          const bounceStart = performance.now();
+          const bounceDuration = 200;
+
+          function settleBounce(bounceTime) {
+            const bElapsed = bounceTime - bounceStart;
+            const bProgress = Math.min(bElapsed / bounceDuration, 1);
+            if (bProgress < 1) {
+              const bounceOffset = Math.sin(bProgress * Math.PI * 3) * Math.exp(-bProgress * 5) * 0.015;
+              currentRotation = targetRotation + bounceOffset;
+              drawWheel();
+              requestAnimationFrame(settleBounce);
+            } else {
+              currentRotation = targetRotation;
+              finalizeSpin();
+            }
+          }
+
+          requestAnimationFrame(settleBounce);
+        }
+      }
+
+      function finalizeSpin() {
+        isSpinning = false;
+        if (hubBtn) {
+          hubBtn.classList.remove("is-spinning");
+        }
+        if (hubText) hubText.textContent = "Girar";
+
+        // Apaga luzes do chaser do aro
+        rimStudElements.forEach(s => s.classList.remove("lit"));
+
+        // Determina o setor vencedor
+        const normalizedAngle = (currentRotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+        const pointerAngle = (3 * Math.PI / 2 - normalizedAngle + 2 * Math.PI) % (2 * Math.PI);
+        const sectorIndex = Math.floor(pointerAngle / arc) % numSectors;
+        const selectedSector = sectors[sectorIndex];
+
+        // Efeitos de comemoração: sino da sorte + luzes do aro piscando + destaque na fatia
+        playSectorChimeSound();
+        flashRimCelebration();
+        drawWheel(sectorIndex);
+
+        // Vibração tátil sutil de conquista no tablet
+        if (navigator.vibrate) {
+          try { navigator.vibrate([40, 60, 80]); } catch (e) {}
+        }
+
+        // Aguarda com piscar luminoso no setor vencedor para o participante curtir o resultado antes da pergunta
+        setTimeout(() => {
+          drawWheel(-1);
+          setTimeout(() => {
+            drawWheel(sectorIndex);
+            setTimeout(() => {
+              drawWheel(-1);
+              if (hubBtn) hubBtn.classList.add("idle-pulse");
+              openQuestionForTheme(selectedSector.label);
+            }, 300);
+          }, 140);
+        }, 360);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    // ==========================================
+
+    // 4. SELEÇÃO E EXIBIÇÃO DE PERGUNTAS
+    // ==========================================
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    let activeQuestion = null;
+    let currentShuffledOptions = [];
+    let currentCorrectLetter = "";
+
+    function openQuestionForTheme(themeName) {
+      // Busca perguntas disponíveis para o tema sorteado
+      let pool = availableQuestions.filter(q => q.tema.trim().toLowerCase() === themeName.trim().toLowerCase());
+
+      // Fallback caso todas as perguntas do tema já tenham sido respondidas na sessão
+      if (pool.length === 0) {
+        pool = allQuestions.filter(q => q.tema.trim().toLowerCase() === themeName.trim().toLowerCase());
+      }
+
+      const selectedQuestion = pool[Math.floor(Math.random() * pool.length)];
+      showQuestionModal(selectedQuestion);
+    }
+
+    function showQuestionModal(question) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      updateVoiceButtonState(false);
+
+      activeQuestion = question;
+      document.getElementById("modalTheme").textContent = question.tema;
+
+      const diffBadge = document.getElementById("modalDifficulty");
+      if (diffBadge) {
+        if (question.dificuldade) {
+          diffBadge.style.display = "inline-flex";
+          let icon = "🟢";
+          let diffClass = "facil";
+          const d = question.dificuldade.toLowerCase();
+          if (d.includes("muito")) {
+            icon = "🔴";
+            diffClass = "muito-dificil";
+          } else if (d.includes("dif")) {
+            icon = "🟠";
+            diffClass = "dificil";
+          } else if (d.includes("méd") || d.includes("med")) {
+            icon = "🟡";
+            diffClass = "medio";
+          }
+          diffBadge.className = `badge-difficulty ${diffClass}`;
+          diffBadge.innerHTML = `<span>${icon}</span><span>${question.dificuldade}</span>`;
+        } else {
+          diffBadge.style.display = "none";
+        }
+      }
+
+      document.getElementById("modalQuestionText").textContent = question.pergunta;
+
+      currentShuffledOptions = shuffleArray(question.opcoes);
+      const letters = ['A', 'B', 'C', 'D', 'E'];
+      const correctIndex = currentShuffledOptions.indexOf(question.resposta_correta_texto);
+      currentCorrectLetter = letters[correctIndex];
+
+      const optsContainer = document.getElementById("modalOptions");
+      optsContainer.innerHTML = "";
+
+      currentShuffledOptions.forEach((optText, idx) => {
+        const letter = letters[idx];
+        const btn = document.createElement("button");
+        btn.className = "touch-option-btn";
+        btn.innerHTML = `
+          <span class="option-letter-badge">${letter}</span>
+          <span>${optText}</span>
+        `;
+        btn.onclick = () => handleAnswer(letter, btn);
+        optsContainer.appendChild(btn);
+      });
+
+      document.getElementById("questionModal").classList.add("active");
+    }
+
+    // ==========================================
+    // LEITURA DE VOZ NATIVA (Web Speech API)
+    // ==========================================
+    function toggleVoiceSpeech() {
+      if (!('speechSynthesis' in window)) {
+        alert("A leitura por voz não é suportada neste navegador.");
+        return;
+      }
+
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        updateVoiceButtonState(false);
+        return;
+      }
+
+      if (!activeQuestion) return;
+
+      const letters = ['A', 'B', 'C', 'D'];
+      const optionsText = currentShuffledOptions
+        .map((opt, idx) => `Opção ${letters[idx]}: ${opt}`)
+        .join('. ');
+
+      const fullText = `Pergunta: ${activeQuestion.pergunta}. ${optionsText}`;
+
+      const utterance = new SpeechSynthesisUtterance(fullText);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const ptVoice = voices.find(v => v.lang.startsWith('pt'));
+      if (ptVoice) utterance.voice = ptVoice;
+
+      utterance.onstart = () => updateVoiceButtonState(true);
+      utterance.onend = () => updateVoiceButtonState(false);
+      utterance.onerror = () => updateVoiceButtonState(false);
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function updateVoiceButtonState(isSpeaking) {
+      const btn = document.getElementById("btnVoiceRead");
+      if (!btn) return;
+      if (isSpeaking) {
+        btn.classList.add("speaking");
+        btn.innerHTML = `<span class="voice-icon">⏹️</span><span>Parar Leitura</span>`;
+      } else {
+        btn.classList.remove("speaking");
+        btn.innerHTML = `<span class="voice-icon">🔊</span><span>Ouvir Pergunta</span>`;
+      }
+    }
+
+    function updatePrizeDots() {
+      const prizeChip = document.getElementById("prize-chip");
+      const tag = document.getElementById("prizeStreakTag");
+      const container = document.getElementById("prizeDotsContainer");
+
+      if (tag) {
+        tag.textContent = prizeTargetHits === 1 ? "1 acerto" : `${prizeTargetHits} seguidas`;
+      }
+
+      if (container) {
+        container.innerHTML = "";
+        for (let i = 1; i <= prizeTargetHits; i++) {
+          const pill = document.createElement("span");
+          pill.className = "prize-pill" + (i <= consecutiveHits ? " active" : "");
+          pill.id = `p-dot-${i}`;
+          pill.title = `Acerto ${i} de ${prizeTargetHits}`;
+          container.appendChild(pill);
+        }
+      }
+
+      if (prizeChip) {
+        if (consecutiveHits >= prizeTargetHits) {
+          prizeChip.classList.add("is-complete");
+        } else {
+          prizeChip.classList.remove("is-complete");
+        }
+      }
+    }
+
+    function resetStreak() {
+      consecutiveHits = 0;
+      updatePrizeDots();
+    }
+
+    function handleAnswer(selectedLetter, clickedBtn) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      updateVoiceButtonState(false);
+
+      const allBtns = document.querySelectorAll(".touch-option-btn");
+      allBtns.forEach(b => b.disabled = true);
+
+      shiftMetrics.totalQuestions++;
+      const isCorrect = (selectedLetter === currentCorrectLetter);
+
+      if (isCorrect) {
+        clickedBtn.classList.add("correct");
+        availableQuestions = availableQuestions.filter(q => q !== activeQuestion);
+        
+        shiftMetrics.totalHits++;
+        totalHits++;
+        consecutiveHits++;
+        saveShiftMetrics();
+        updateScoreboard();
+        updatePrizeDots();
+
+        // Se atingiu a meta de acertos configurada pelo monitor:
+        if (consecutiveHits >= prizeTargetHits) {
+          shiftMetrics.totalPrizes++;
+          saveShiftMetrics();
+          setTimeout(() => {
+            closeQuestionModal();
+            showPrizePopup();
+          }, 850);
+        } else {
+          playCorrectSound();
+          setTimeout(() => {
+            closeQuestionModal();
+            showSuccessPopup();
+          }, 850);
+        }
+      } else {
+        clickedBtn.classList.add("wrong");
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+        allBtns.forEach((b, idx) => {
+          if (letters[idx] === currentCorrectLetter) {
+            b.classList.add("correct");
+          }
+        });
+
+        playWrongSound();
+        totalMisses++;
+        saveShiftMetrics();
+        const hadStreak = consecutiveHits > 0;
+        consecutiveHits = 0;
+        updateScoreboard();
+        updatePrizeDots();
+
+        setTimeout(() => {
+          closeQuestionModal();
+          handleWrongAnswer(hadStreak);
+        }, 1300);
+      }
+    }
+
+    function closeQuestionModal() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      updateVoiceButtonState(false);
+      document.getElementById("questionModal").classList.remove("active");
+    }
+
+    // ==========================================
+    // 5. FEEDBACKS COM CONFETES & VOCÊ SABIA?
+    // ==========================================
+    function safeConfetti(opts) {
+      if (typeof confetti === 'function') {
+        try { confetti(opts); } catch (e) {}
+      }
+    }
+
+    function triggerConfetti() {
+      safeConfetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.5 },
+        zIndex: 9999
+      });
+    }
+
+    let prizeTimer = null;
+    let prizeConfettiInterval = null;
+
+    function finishPrizeAndReset() {
+      if (prizeTimer) {
+        clearInterval(prizeTimer);
+        prizeTimer = null;
+      }
+      if (prizeConfettiInterval) {
+        clearInterval(prizeConfettiInterval);
+        prizeConfettiInterval = null;
+      }
+      closePopup();
+      // Reinicia completamente o jogo para o próximo participante
+      resetGame(false);
+    }
+
+    // Popup de Vitória Especial: BRINDE CONQUISTADO (com contagem regressiva e auto-reset)
+    function showPrizePopup() {
+      playPrizeFanfareSound();
+      const popupCard = document.getElementById("popupCard");
+      
+      let secondsLeft = 10;
+      const totalSeconds = 10;
+      const targetText = prizeTargetHits === 1 ? "1 pergunta" : `${prizeTargetHits} perguntas seguidas`;
+
+      popupCard.innerHTML = `
+        <div class="feedback-icon-wrap" style="background: #fef3c7; color: #b45309; font-size: 3rem;">🎁</div>
+        <h2 class="popup-title" style="color: #b45309; font-size: 1.85rem;">PARABÉNS! VOCÊ GANHOU O BRINDE!</h2>
+        <p style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 12px 0;">
+          Você acertou <strong>${targetText}</strong> sobre Saúde e Prevenção!
+        </p>
+        <div class="prize-alert-banner">
+          🎉 Mostre esta tela para a equipe e retire o seu brinde!
+        </div>
+
+        ${activeQuestion && activeQuestion.explicacao ? `
+          <div class="did-you-know-card" style="margin-bottom: 12px;">
+            <div class="dyk-header">
+              <span class="dyk-badge">💡 VOCÊ SABIA?</span>
+            </div>
+            <p class="dyk-text">${activeQuestion.explicacao}</p>
+          </div>
+        ` : ''}
+
+        <div class="prize-countdown-box">
+          <div class="prize-countdown-text">
+            <span>⏱️</span>
+            <span>Novo jogo iniciando em <strong class="prize-countdown-num" id="prizeCountdown">${secondsLeft}</strong>s</span>
+          </div>
+          <div class="prize-progress-track">
+            <div class="prize-progress-fill" id="prizeProgressBar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <button class="btn-continue-prize" onclick="finishPrizeAndReset();">
+          Iniciar Novo Jogo Agora
+        </button>
+      `;
+
+      openPopup();
+
+      // Chuva intensa de confetes imediata
+      safeConfetti({
+        particleCount: 180,
+        spread: 90,
+        origin: { y: 0.45 },
+        colors: ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#facc15'],
+        zIndex: 9999
+      });
+
+      // Efeito de confetes periódicos durante a comemoração
+      if (prizeConfettiInterval) clearInterval(prizeConfettiInterval);
+      prizeConfettiInterval = setInterval(() => {
+        safeConfetti({
+          particleCount: 90,
+          spread: 75,
+          origin: { y: 0.5 },
+          colors: ['#f59e0b', '#10b981', '#3b82f6', '#facc15'],
+          zIndex: 9999
+        });
+      }, 2500);
+
+      // Contagem regressiva para reiniciar automaticamente
+      if (prizeTimer) clearInterval(prizeTimer);
+      prizeTimer = setInterval(() => {
+        secondsLeft--;
+        const countdownEl = document.getElementById("prizeCountdown");
+        const barEl = document.getElementById("prizeProgressBar");
+
+        if (countdownEl) {
+          countdownEl.textContent = secondsLeft;
+        }
+        if (barEl) {
+          const pct = Math.max(0, (secondsLeft / totalSeconds) * 100);
+          barEl.style.width = pct + "%";
+        }
+
+        if (secondsLeft <= 0) {
+          finishPrizeAndReset();
+        }
+      }, 1000);
+    }
+
+    function showSuccessPopup() {
+      const popupCard = document.getElementById("popupCard");
+      
+      const missingForPrize = prizeTargetHits - consecutiveHits;
+      const prizeTip = (missingForPrize === 1)
+        ? "🔥 <strong>Incrível! Falta apenas 1 acerto para ganhar o brinde!</strong>"
+        : `🎯 <strong>Você acertou ${consecutiveHits} seguida(s)! Faltam ${missingForPrize} para o brinde!</strong>`;
+
+      popupCard.innerHTML = `
+        <div class="feedback-icon-wrap success">🎉</div>
+        <h2 class="popup-title" style="color: #0f766e;">Parabéns! Você acertou!</h2>
+        
+        <!-- Cartão Educativo Você Sabia -->
+        <div class="did-you-know-card">
+          <div class="dyk-header">
+            <span class="dyk-badge">💡 VOCÊ SABIA?</span>
+          </div>
+          <p class="dyk-text">${activeQuestion.explicacao}</p>
+        </div>
+
+        <div style="background: #fefce8; border: 1.5px solid #fef08a; padding: 12px 16px; border-radius: 14px; margin-top: 14px; color: #854d0e; font-size: 0.98rem;">
+          ${prizeTip}
+        </div>
+        <p style="margin-top: 12px; font-weight: 700; color: #059669; font-size: 1.05rem;">
+          Total de acertos na sessão: <strong>${totalHits}</strong>
+        </p>
+
+        ${advanceMode === 'manual' ? '<button class="btn-modal-continue" onclick="closePopup()">Continuar ➔</button>' : ''}
+      `;
+
+      openPopup();
+      triggerConfetti();
+
+      if (advanceMode === 'auto') {
+        popupAutoTimer = setTimeout(() => {
+          closePopup();
+        }, 5000);
+      }
+    }
+
+    function handleWrongAnswer(hadStreak = false) {
+      const popupCard = document.getElementById("popupCard");
+      const title = "Não foi dessa vez!";
+      const streakMsg = hadStreak 
+        ? "<div style='background: #fff1f2; border: 1px solid #fecdd3; padding: 10px 14px; border-radius: 12px; margin-top: 10px; color: #be123c; font-size: 0.92rem;'>A sequência para o brinde recomeçou. Gire a roleta e tente novamente!</div>"
+        : "";
+
+      popupCard.innerHTML = `
+        <div class="feedback-icon-wrap error">💡</div>
+        <h2 class="popup-title" style="color: #dc2626;">${title}</h2>
+
+        <div class="wrong-answer-correction">
+          A resposta correta é: <strong>${activeQuestion.resposta_correta_texto}</strong>
+        </div>
+
+        <!-- Cartão Educativo com a explicação -->
+        <div class="did-you-know-card wrong">
+          <div class="dyk-header">
+            <span class="dyk-badge">📖 APRENDENDO COM O SESI</span>
+          </div>
+          <p class="dyk-text">${activeQuestion.explicacao}</p>
+        </div>
+
+        ${streakMsg}
+        <div class="popup-score-summary" style="margin-top: 14px;">
+          Placar atual: <span style="color: #059669; font-weight: 800;">${totalHits} acertos</span> &bull; <span style="color: #dc2626; font-weight: 800;">${totalMisses} erros</span>
+        </div>
+
+        ${advanceMode === 'manual' ? '<button class="btn-modal-continue" onclick="closePopup()">Tentar Novamente ➔</button>' : ''}
+      `;
+
+      openPopup();
+
+      if (advanceMode === 'auto') {
+        popupAutoTimer = setTimeout(() => {
+          closePopup();
+        }, 5500);
+      }
+    }
+
+    function openPopup() {
+      document.getElementById("feedbackPopup").classList.add("active");
+    }
+
+    function closePopup() {
+      if (popupAutoTimer) {
+        clearTimeout(popupAutoTimer);
+        popupAutoTimer = null;
+      }
+      if (prizeTimer) {
+        clearInterval(prizeTimer);
+        prizeTimer = null;
+      }
+      if (prizeConfettiInterval) {
+        clearInterval(prizeConfettiInterval);
+        prizeConfettiInterval = null;
+      }
+      document.getElementById("feedbackPopup").classList.remove("active");
+    }
+
+    // ==========================================
+    // 6. PAINEL DO MONITOR DO ESTANDE (MODO EVENTO)
+    // ==========================================
+    let logoTapCount = 0;
+    let logoTapTimeout = null;
+
+    function handleLogoTap() {
+      logoTapCount++;
+      if (logoTapTimeout) clearTimeout(logoTapTimeout);
+
+      if (logoTapCount >= 3) {
+        logoTapCount = 0;
+        openMonitorPanel();
+        return;
+      }
+
+      logoTapTimeout = setTimeout(() => {
+        logoTapCount = 0;
+      }, 900);
+    }
+
+    function openMonitorPanel() {
+      updateMonitorPanelUI();
+      document.getElementById("monitorModal").classList.add("active");
+    }
+
+    function closeMonitorPanel() {
+      document.getElementById("monitorModal").classList.remove("active");
+    }
+
+    function setPrizeTarget(target) {
+      prizeTargetHits = target;
+      localStorage.setItem("sesi_prize_target", target);
+      if (consecutiveHits > prizeTargetHits) consecutiveHits = prizeTargetHits;
+      updatePrizeDots();
+      updateMonitorPanelUI();
+    }
+
+    function setAdvanceMode(mode) {
+      advanceMode = mode;
+      localStorage.setItem("sesi_advance_mode", mode);
+      updateMonitorPanelUI();
+    }
+
+    function setSoundState(enabled) {
+      soundEnabled = enabled;
+      localStorage.setItem("sesi_sound_enabled", enabled ? "true" : "false");
+      updateMonitorPanelUI();
+    }
+
+    function resetShiftMetrics() {
+      if (confirm("Deseja realmente zerar todas as métricas acumuladas do turno do evento?")) {
+        shiftMetrics = { totalQuestions: 0, totalHits: 0, totalPrizes: 0 };
+        saveShiftMetrics();
+        updateMonitorPanelUI();
+      }
+    }
+
+    function updateMonitorPanelUI() {
+      // Atualiza botões de meta
+      [1, 2, 3].forEach(n => {
+        const btn = document.getElementById(`btnTarget${n}`);
+        if (btn) {
+          if (prizeTargetHits === n) btn.classList.add("active");
+          else btn.classList.remove("active");
+        }
+      });
+
+      // Atualiza modo de avanço
+      const btnAuto = document.getElementById("btnAdvAuto");
+      const btnManual = document.getElementById("btnAdvManual");
+      if (btnAuto && btnManual) {
+        if (advanceMode === 'auto') {
+          btnAuto.classList.add("active");
+          btnManual.classList.remove("active");
+        } else {
+          btnAuto.classList.remove("active");
+          btnManual.classList.add("active");
+        }
+      }
+
+      // Atualiza som
+      const btnSOn = document.getElementById("btnSoundOn");
+      const btnSOff = document.getElementById("btnSoundOff");
+      if (btnSOn && btnSOff) {
+        if (soundEnabled) {
+          btnSOn.classList.add("active");
+          btnSOff.classList.remove("active");
+        } else {
+          btnSOn.classList.remove("active");
+          btnSOff.classList.add("active");
+        }
+      }
+
+      // Atualiza métricas
+      const elTotal = document.getElementById("mTotalPlays");
+      const elPrizes = document.getElementById("mTotalPrizes");
+      const elAcc = document.getElementById("mAccuracy");
+      if (elTotal) elTotal.textContent = shiftMetrics.totalQuestions;
+      if (elPrizes) elPrizes.textContent = shiftMetrics.totalPrizes;
+      if (elAcc) {
+        const pct = shiftMetrics.totalQuestions > 0 
+          ? Math.round((shiftMetrics.totalHits / shiftMetrics.totalQuestions) * 100) 
+          : 0;
+        elAcc.textContent = `${pct}%`;
+      }
+    }
+
+    // ==========================================
+    // 7. ESTADO E PLACAR (ACERTOS & ERROS & BRINDE)
+    // ==========================================
+    function updateScoreboard() {
+      const hitsEl = document.getElementById("hits-counter");
+      const missesEl = document.getElementById("misses-counter");
+      if (hitsEl) hitsEl.textContent = totalHits;
+      if (missesEl) missesEl.textContent = totalMisses;
+      updatePrizeDots();
+    }
+
+    function resetGame(manual = true) {
+      totalHits = 0;
+      totalMisses = 0;
+      consecutiveHits = 0;
+      availableQuestions = [...allQuestions];
+      updateScoreboard();
+      const hubBtn = document.getElementById("spinHubBtn");
+      if (hubBtn) hubBtn.classList.add("idle-pulse");
+      if (manual) {
+        closeQuestionModal();
+        closePopup();
+      }
+    }
+
+    // Inicialização
+    updateScoreboard();
+  </script>
+</body>
+</html>
